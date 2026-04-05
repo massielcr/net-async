@@ -15,6 +15,11 @@ namespace Books.API.Services
             _booksDbContext.Books.Add(book);
         }
 
+        public void DeleteBook(Book book)
+        {
+            _booksDbContext.Books.Remove(book);
+        }
+
         public Book? GetBook(Guid id)
         {
             return _booksDbContext.Books.Include(b => b.Author).FirstOrDefault(b => b.Id == id);
@@ -38,6 +43,6 @@ namespace Books.API.Services
         public async Task<bool> SaveChangesAsync()
         {
             return await _booksDbContext.SaveChangesAsync() > 0;
-        }
+        }        
     }
 }

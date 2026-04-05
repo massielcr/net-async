@@ -5,6 +5,7 @@ namespace Books.API.Services
     public interface IBooksRepository
     {
         void AddBook(Book book);
+        void DeleteBook(Book book);
 
         Book? GetBook(Guid id);
 

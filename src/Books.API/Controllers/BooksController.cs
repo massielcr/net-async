@@ -3,6 +3,7 @@ using Books.API.Entities;
 using Books.API.Filters;
 using Books.API.Models;
 using Books.API.Services;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Books.API.Controllers
@@ -42,12 +43,29 @@ namespace Books.API.Controllers
         public async Task<IActionResult> CreateBook([FromBody] BookForCreationDto bookForCreationDto)
         {
             var book = _mapper.Map<Book>(bookForCreationDto);
+
             _booksRepository.AddBook(book);
 
             await _booksRepository.SaveChangesAsync();
             await _booksRepository.GetBookAsync(book.Id);
 
             return CreatedAtRoute("GetBook", new { id = book.Id }, book);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteBook(Guid id)
+        {
+            var book = await _booksRepository.GetBookAsync(id);
+            if (book == null)
+            {
+                return NotFound();
+            }
+
+            _booksRepository.DeleteBook(book);
+
+            await _booksRepository.SaveChangesAsync();
+
+            return NoContent();
         }
     }
 }
