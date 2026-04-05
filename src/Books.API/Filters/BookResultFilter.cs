@@ -1,11 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Books.API.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace Books.API.Filters
 {
-    public class BookResultFilterAttribute : ResultFilterAttribute
+    public class BookResultFilter(IMapper mapper) : IAsyncResultFilter
     {
-        public override async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
+        public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
         {
             var resultFromAction = context.Result as ObjectResult;
 
@@ -16,7 +18,9 @@ namespace Books.API.Filters
                 await next();
                 return;
             }
-                 
+
+            resultFromAction.Value = mapper.Map<BookDto>(resultFromAction.Value);
+
             await next();
         }
     }

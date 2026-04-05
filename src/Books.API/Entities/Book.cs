@@ -17,6 +17,7 @@ public class Book
     public string? Descrition { get; set; }
 
     public Guid AuthorId { get; set; }
+    public Author? Author { get; set; }
 
     public Book(Guid id, Guid authorId, string title, string? descrition)
     {

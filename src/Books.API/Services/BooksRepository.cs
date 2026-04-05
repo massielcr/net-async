@@ -10,22 +10,22 @@ namespace Books.API.Services
 
         public Book? GetBook(Guid id)
         {
-            return _booksDbContext.Books.FirstOrDefault(b => b.Id == id);
+            return _booksDbContext.Books.Include(b => b.Author).FirstOrDefault(b => b.Id == id);
         }
 
         public async Task<Book?> GetBookAsync(Guid id)
         {
-            return await _booksDbContext.Books.FirstOrDefaultAsync(b => b.Id == id);
+            return await _booksDbContext.Books.Include(b => b.Author).FirstOrDefaultAsync(b => b.Id == id);
         }
 
         public IEnumerable<Book> GetBooks()
         {
-            return [.. _booksDbContext.Books];
+            return [.. _booksDbContext.Books.Include(b => b.Author)];
         }
 
         public async Task<IEnumerable<Book>> GetBooksAsync()
         {
-            return await _booksDbContext.Books.ToListAsync();
+            return await _booksDbContext.Books.Include(b => b.Author).ToListAsync();
         }
     }
 }
