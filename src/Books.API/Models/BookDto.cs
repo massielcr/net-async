@@ -7,6 +7,7 @@
         public string Title { get; set; }
         public string? Description { get; set; }
 
+
         public BookDto(Guid id, string authorName, string title, string? description)
         {
             Id = id;

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Books.API.Entities;
 
@@ -11,19 +12,22 @@ public class Book
 
     [Required]
     [MaxLength(150)]
-    public string Title { get; set; }
+    public required string Title { get; set; }
 
     [MaxLength(2500)]
-    public string? Descrition { get; set; }
+    public string? Description { get; set; }
+
 
     public Guid AuthorId { get; set; }
-    public Author? Author { get; set; }
 
-    public Book(Guid id, Guid authorId, string title, string? descrition)
+    public Author Author { get; set; } = null!;
+
+    [SetsRequiredMembers]
+    public Book(Guid id, Guid authorId, string title, string? description)
     {
         Id = id;
         AuthorId = authorId;
         Title = title;
-        Descrition = descrition;        
+        Description = description;        
     }
 }

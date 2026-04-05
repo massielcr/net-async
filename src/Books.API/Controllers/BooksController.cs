@@ -1,4 +1,7 @@
-﻿using Books.API.Filters;
+﻿using AutoMapper;
+using Books.API.Entities;
+using Books.API.Filters;
+using Books.API.Models;
 using Books.API.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,8 +9,9 @@ namespace Books.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class BooksController(IBooksRepository booksRepository) : ControllerBase
+    public class BooksController(IMapper mapper, IBooksRepository booksRepository) : ControllerBase
     {
+        private readonly IMapper _mapper = mapper;
         private readonly IBooksRepository _booksRepository = booksRepository;
 
         [HttpGet]
@@ -19,7 +23,7 @@ namespace Books.API.Controllers
             return Ok(books);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name ="GetBook")]
         [TypeFilter(typeof(BookResultFilter))]
         public async Task<IActionResult> GetBook(Guid id)
         {
@@ -31,6 +35,19 @@ namespace Books.API.Controllers
             }
 
             return Ok(book);
+        }
+
+        [HttpPost]
+        [TypeFilter(typeof(BookResultFilter))]
+        public async Task<IActionResult> CreateBook([FromBody] BookForCreationDto bookForCreationDto)
+        {
+            var book = _mapper.Map<Book>(bookForCreationDto);
+            _booksRepository.AddBook(book);
+
+            await _booksRepository.SaveChangesAsync();
+            await _booksRepository.GetBookAsync(book.Id);
+
+            return CreatedAtRoute("GetBook", new { id = book.Id }, book);
         }
     }
 }

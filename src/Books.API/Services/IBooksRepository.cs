@@ -4,11 +4,17 @@ namespace Books.API.Services
 {
     public interface IBooksRepository
     {
-        IEnumerable<Book> GetBooks();
+        void AddBook(Book book);
+
         Book? GetBook(Guid id);
 
-        Task<IEnumerable<Book>> GetBooksAsync();
-        Task<Book?> GetBookAsync(Guid id);
+        IEnumerable<Book> GetBooks();
         
+
+        Task<IEnumerable<Book>> GetBooksAsync();
+
+        Task<Book?> GetBookAsync(Guid id);  
+        
+        Task<bool> SaveChangesAsync();
     }
 }

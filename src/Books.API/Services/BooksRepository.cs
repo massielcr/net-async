@@ -8,14 +8,16 @@ namespace Books.API.Services
     {
         private readonly BooksDbContext _booksDbContext = booksDbContext;
 
+        public void AddBook(Book book)
+        {
+            ArgumentNullException.ThrowIfNull(book);
+
+            _booksDbContext.Books.Add(book);
+        }
+
         public Book? GetBook(Guid id)
         {
             return _booksDbContext.Books.Include(b => b.Author).FirstOrDefault(b => b.Id == id);
-        }
-
-        public async Task<Book?> GetBookAsync(Guid id)
-        {
-            return await _booksDbContext.Books.Include(b => b.Author).FirstOrDefaultAsync(b => b.Id == id);
         }
 
         public IEnumerable<Book> GetBooks()
@@ -23,9 +25,19 @@ namespace Books.API.Services
             return [.. _booksDbContext.Books.Include(b => b.Author)];
         }
 
+        public async Task<Book?> GetBookAsync(Guid id)
+        {
+            return await _booksDbContext.Books.Include(b => b.Author).FirstOrDefaultAsync(b => b.Id == id);
+        }        
+
         public async Task<IEnumerable<Book>> GetBooksAsync()
         {
             return await _booksDbContext.Books.Include(b => b.Author).ToListAsync();
+        }
+
+        public async Task<bool> SaveChangesAsync()
+        {
+            return await _booksDbContext.SaveChangesAsync() > 0;
         }
     }
 }

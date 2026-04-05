@@ -1,4 +1,5 @@
 using Books.API.DbContexts;
+using Books.API.Filters;
 using Books.API.Profiles;
 using Books.API.Services;
 using Microsoft.EntityFrameworkCore;
