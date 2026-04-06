@@ -40,6 +40,14 @@ namespace Books.API.Services
             return await _booksDbContext.Books.Include(b => b.Author).ToListAsync();
         }
 
+        public async Task<IEnumerable<Book>> GetBooksAsync(IEnumerable<Guid> ids)
+        {
+            return await _booksDbContext.Books
+                            .Where(b => ids.Contains(b.Id))
+                            .Include(b => b.Author)
+                            .ToListAsync();
+        }
+
         public async Task<bool> SaveChangesAsync()
         {
             return await _booksDbContext.SaveChangesAsync() > 0;
