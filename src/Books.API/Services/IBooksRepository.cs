@@ -1,16 +1,19 @@
 ﻿using Books.API.Entities;
+using Books.API.Models.External;
 
 namespace Books.API.Services
 {
     public interface IBooksRepository
     {
         void AddBook(Book book);
+
         void DeleteBook(Book book);
 
         Book? GetBook(Guid id);
 
-        IEnumerable<Book> GetBooks();
-        
+        Task<Book?> GetBookAsync(Guid id);
+
+        IEnumerable<Book> GetBooks();       
 
         Task<IEnumerable<Book>> GetBooksAsync();        
 
@@ -18,8 +21,19 @@ namespace Books.API.Services
 
         IAsyncEnumerable<Book> GetBooksAsAsyncEnumerable();
 
-        Task<Book?> GetBookAsync(Guid id);  
-        
+                 
+
         Task<bool> SaveChangesAsync();
+
+
+        #region Book Cover
+
+        Task<BookCoverDto?> GetBookCoverAsync(string id);
+
+        Task<IEnumerable<BookCoverDto>> GetBookCoversProcessOneByOneAsync(Guid bookId);
+
+        Task<IEnumerable<BookCoverDto>> GetBookCoversProcessAfterWaitForAllAsync(Guid bookId);
+
+        #endregion
     }
 }
