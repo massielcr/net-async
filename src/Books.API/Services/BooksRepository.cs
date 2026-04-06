@@ -48,6 +48,11 @@ namespace Books.API.Services
                             .ToListAsync();
         }
 
+        public IAsyncEnumerable<Book> GetBooksAsAsyncEnumerable()
+        {
+            return _booksDbContext.Books.Include(b => b.Author).AsAsyncEnumerable();
+        }
+
         public async Task<bool> SaveChangesAsync()
         {
             return await _booksDbContext.SaveChangesAsync() > 0;

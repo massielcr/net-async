@@ -3,6 +3,7 @@ using Books.API.Entities;
 using Books.API.Filters;
 using Books.API.Models;
 using Books.API.Services;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,6 +23,15 @@ namespace Books.API.Controllers
             var books = await _booksRepository.GetBooksAsync();
 
             return Ok(books);
+        }
+
+        [HttpGet("bookstream")]
+        public async IAsyncEnumerable<BookDto> StreamBooks()
+        {
+            await foreach (var book in _booksRepository.GetBooksAsAsyncEnumerable())
+            {
+                yield return _mapper.Map<BookDto>(book); ;
+            }
         }
 
         [HttpGet("{id}", Name ="GetBook")]
