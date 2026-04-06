@@ -2,6 +2,7 @@
 using Books.API.Entities;
 using Books.API.Filters;
 using Books.API.Models;
+using Books.API.Models.External;
 using Books.API.Services;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -35,7 +36,7 @@ namespace Books.API.Controllers
         }
 
         [HttpGet("{id}", Name ="GetBook")]
-        [TypeFilter(typeof(BookResultFilter))]
+        [TypeFilter(typeof(BookWithCoverResultFilter))]
         public async Task<IActionResult> GetBook(Guid id)
         {
             var book = await _booksRepository.GetBookAsync(id);
@@ -51,7 +52,9 @@ namespace Books.API.Controllers
 
             var bookCovers = await _booksRepository.GetBookCoversProcessAfterWaitForAllAsync(id);
 
-            return Ok(book);
+            (Book book, IEnumerable<BookCoverDto> bookCovers) propertyBag = new (book, bookCovers);
+
+            return Ok((book, bookCovers));
         }
 
         [HttpPost]
