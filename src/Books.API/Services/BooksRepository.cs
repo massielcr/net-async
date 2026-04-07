@@ -99,25 +99,27 @@ namespace Books.API.Services
 
             using (var cancellationTokenSource = new CancellationTokenSource())
             {
-                foreach (var url in bookCoversUrl)
+                using (var linkedCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, cancellationTokenSource.Token))
                 {
-                    var response = await httpClient.GetAsync(url, cancellationToken);
-                    if (response.IsSuccessStatusCode)
+                    foreach (var url in bookCoversUrl)
                     {
-                        var bookCover = JsonSerializer.Deserialize<BookCoverDto>
-                            (
-                                await response.Content.ReadAsStringAsync(cancellationToken),
-                                new JsonSerializerOptions() { PropertyNameCaseInsensitive = true }
-                            );
-                        if (bookCover != null)
+                        var response = await httpClient.GetAsync(url, linkedCancellationTokenSource.Token);
+                        if (response.IsSuccessStatusCode)
                         {
-                            bookCovers.Add(bookCover);
+                            var bookCover = JsonSerializer.Deserialize<BookCoverDto>
+                                (
+                                    await response.Content.ReadAsStringAsync(linkedCancellationTokenSource.Token),
+                                    new JsonSerializerOptions() { PropertyNameCaseInsensitive = true }
+                                );
+                            if (bookCover != null)
+                            {
+                                bookCovers.Add(bookCover);
+                            }
                         }
-                    }
-                    else
-                    {
-                        cancellationTokenSource.Cancel();
-                        break;
+                        else
+                        {
+                            cancellationTokenSource.Cancel();
+                        }
                     }
                 }
             }
