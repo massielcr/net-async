@@ -37,7 +37,7 @@ namespace Books.API.Controllers
 
         [HttpGet("{id}", Name ="GetBook")]
         [TypeFilter(typeof(BookWithCoverResultFilter))]
-        public async Task<IActionResult> GetBook(Guid id)
+        public async Task<IActionResult> GetBook(Guid id, CancellationToken cancellationToken)
         {
             var book = await _booksRepository.GetBookAsync(id);
 
@@ -48,9 +48,9 @@ namespace Books.API.Controllers
 
             //var bookCover = await _booksRepository.GetBookCoverAsync("dummycover");
 
-            //var bookCovers = await _booksRepository.GetBookCoversProcessOneByOneAsync(id);
+            var bookCovers = await _booksRepository.GetBookCoversProcessOneByOneAsync(id, cancellationToken);
 
-            var bookCovers = await _booksRepository.GetBookCoversProcessAfterWaitForAllAsync(id);
+            //var bookCovers = await _booksRepository.GetBookCoversProcessAfterWaitForAllAsync(id);
 
             (Book book, IEnumerable<BookCoverDto> bookCovers) propertyBag = new (book, bookCovers);
 

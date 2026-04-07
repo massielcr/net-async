@@ -30,7 +30,7 @@ namespace Books.API.Services
 
         Task<BookCoverDto?> GetBookCoverAsync(string id);
 
-        Task<IEnumerable<BookCoverDto>> GetBookCoversProcessOneByOneAsync(Guid bookId);
+        Task<IEnumerable<BookCoverDto>> GetBookCoversProcessOneByOneAsync(Guid bookId, CancellationToken cancellationToken);
 
         Task<IEnumerable<BookCoverDto>> GetBookCoversProcessAfterWaitForAllAsync(Guid bookId);
 

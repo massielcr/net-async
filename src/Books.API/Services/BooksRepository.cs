@@ -83,7 +83,7 @@ namespace Books.API.Services
             return null;
         }
 
-        public async Task<IEnumerable<BookCoverDto>> GetBookCoversProcessOneByOneAsync(Guid bookId)
+        public async Task<IEnumerable<BookCoverDto>> GetBookCoversProcessOneByOneAsync(Guid bookId, CancellationToken cancellationToken)
         {
             var httpClient = _httpClientFactory.CreateClient();
             var bookCovers = new List<BookCoverDto>();
@@ -91,25 +91,33 @@ namespace Books.API.Services
             var bookCoversUrl = new[]
             {
                 $"{bookCoversBaseAddess}/api/bookcovers/{bookId}-dummycover1",
-                $"{bookCoversBaseAddess}/api/bookcovers/{bookId}-dummycover2",
+                $"{bookCoversBaseAddess}/api/bookcovers/{bookId}-dummycover2?returnFault=true",
                 $"{bookCoversBaseAddess}/api/bookcovers/{bookId}-dummycover3",
                 $"{bookCoversBaseAddess}/api/bookcovers/{bookId}-dummycover4",
                 $"{bookCoversBaseAddess}/api/bookcovers/{bookId}-dummycover5"
             };
 
-            foreach (var url in bookCoversUrl)
+            using (var cancellationTokenSource = new CancellationTokenSource())
             {
-                var response = await httpClient.GetAsync(url);
-                if (response.IsSuccessStatusCode)
+                foreach (var url in bookCoversUrl)
                 {
-                    var bookCover = JsonSerializer.Deserialize<BookCoverDto>
-                        (
-                            await response.Content.ReadAsStringAsync(),
-                            new JsonSerializerOptions() { PropertyNameCaseInsensitive = true }
-                        );
-                    if (bookCover != null )
+                    var response = await httpClient.GetAsync(url, cancellationToken);
+                    if (response.IsSuccessStatusCode)
                     {
-                        bookCovers.Add( bookCover );
+                        var bookCover = JsonSerializer.Deserialize<BookCoverDto>
+                            (
+                                await response.Content.ReadAsStringAsync(cancellationToken),
+                                new JsonSerializerOptions() { PropertyNameCaseInsensitive = true }
+                            );
+                        if (bookCover != null)
+                        {
+                            bookCovers.Add(bookCover);
+                        }
+                    }
+                    else
+                    {
+                        cancellationTokenSource.Cancel();
+                        break;
                     }
                 }
             }
