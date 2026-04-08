@@ -1,5 +1,6 @@
 ﻿using StockAnalyzer.Core;
 using StockAnalyzer.Core.Domain;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
@@ -47,11 +48,19 @@ public partial class MainWindow : Window
         
         */
 
-        var store = new DataStore();
+        try
+        {
+            var store = new DataStore();
 
-        var data = await store.GetStockPrices(StockIdentifier.Text);
+            var data = await store.GetStockPrices(StockIdentifier.Text);
 
-        Stocks.ItemsSource = data;
+            Stocks.ItemsSource = data;
+        }
+        catch (Exception ex)
+        {
+            Notes.Text = $"An error occurred while loading stock data: {ex.Message}";
+        }
+        
 
         AfterLoadingStockData();
     }
