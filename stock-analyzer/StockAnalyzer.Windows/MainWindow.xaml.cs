@@ -26,11 +26,11 @@ public partial class MainWindow : Window
 
     private async void Search_Click(object sender, RoutedEventArgs e)
     {
-        BeforeLoadingStockData();
-
         /* 
          * 
          * HTTPClient call
+
+        BeforeLoadingStockData();
 
         var response = await _httpClient.GetAsync($"{API_URL}/{StockIdentifier.Text}");
 
@@ -45,9 +45,30 @@ public partial class MainWindow : Window
 
             Stocks.ItemsSource = data;
         }    
+
+        AfterLoadingStockData();
         
         */
 
+        try
+        {
+            BeforeLoadingStockData();
+
+            await GetStocks();
+        }
+        catch (Exception ex)
+        {
+            Notes.Text = $"An error occurred while loading stock data: {ex.Message}";
+        }
+        finally
+        {
+            AfterLoadingStockData();
+        }       
+    }
+
+
+    private async Task GetStocks()
+    {
         try
         {
             var store = new DataStore();
@@ -58,19 +79,9 @@ public partial class MainWindow : Window
         }
         catch (Exception ex)
         {
-            Notes.Text = $"An error occurred while loading stock data: {ex.Message}";
+            throw;
         }
-        
-
-        AfterLoadingStockData();
     }
-
-
-
-
-
-
-
 
     private void BeforeLoadingStockData()
     {
