@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using StockAnalyzer.Core;
 using StockAnalyzer.Core.Domain;
 using StockAnalyzer.Web.Models;
 using System.Diagnostics;

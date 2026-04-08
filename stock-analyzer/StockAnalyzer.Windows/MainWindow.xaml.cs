@@ -1,13 +1,14 @@
-﻿using StockAnalyzer.Core.Domain;
+﻿using StockAnalyzer.Core;
+using StockAnalyzer.Core.Domain;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
+using System.Net.Http;
+using System.Text.Json;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Navigation;
-using System.Text.Json;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 namespace StockAnalyzer.Windows;
 
@@ -26,6 +27,10 @@ public partial class MainWindow : Window
     {
         BeforeLoadingStockData();
 
+        /* 
+         * 
+         * HTTPClient call
+
         var response = await _httpClient.GetAsync($"{API_URL}/{StockIdentifier.Text}");
 
         if (response.IsSuccessStatusCode)
@@ -38,7 +43,15 @@ public partial class MainWindow : Window
             var data = JsonSerializer.Deserialize<IEnumerable<StockPrice>>(content, JsonSerializerOptions.Web);
 
             Stocks.ItemsSource = data;
-        }        
+        }    
+        
+        */
+
+        var store = new DataStore();
+
+        var data = await store.GetStockPrices(StockIdentifier.Text);
+
+        Stocks.ItemsSource = data;
 
         AfterLoadingStockData();
     }
