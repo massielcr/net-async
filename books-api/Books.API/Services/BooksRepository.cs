@@ -91,7 +91,7 @@ namespace Books.API.Services
             var bookCoversUrl = new[]
             {
                 $"{bookCoversBaseAddess}/api/bookcovers/{bookId}-dummycover1",
-                $"{bookCoversBaseAddess}/api/bookcovers/{bookId}-dummycover2?returnFault=true",
+                $"{bookCoversBaseAddess}/api/bookcovers/{bookId}-dummycover2",
                 $"{bookCoversBaseAddess}/api/bookcovers/{bookId}-dummycover3",
                 $"{bookCoversBaseAddess}/api/bookcovers/{bookId}-dummycover4",
                 $"{bookCoversBaseAddess}/api/bookcovers/{bookId}-dummycover5"

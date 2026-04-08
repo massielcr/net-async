@@ -1,4 +1,5 @@
 <Solution>
   <Project Path="BookCovers.API/BookCovers.API.csproj" Id="40367b36-9cef-49b5-8849-26f4e04678ab" />
   <Project Path="Books.API/Books.API.csproj" Id="671840f8-cfbb-4056-8df6-767c34ec5c2e" />
+  <Project Path="Books.Legacy/Books.Legacy.csproj" Id="10ab1151-2653-443b-a445-c205eae98fe0" />
 </Solution>

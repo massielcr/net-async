@@ -4,18 +4,17 @@ using Books.API.Filters;
 using Books.API.Models;
 using Books.API.Models.External;
 using Books.API.Services;
-using Microsoft.AspNetCore.Http.Features;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Books.Legacy;
 
 namespace Books.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class BooksController(IMapper mapper, IBooksRepository booksRepository) : ControllerBase
+    public class BooksController(IBooksRepository booksRepository, IMapper mapper) : ControllerBase
     {
-        private readonly IMapper _mapper = mapper;
         private readonly IBooksRepository _booksRepository = booksRepository;
+        private readonly IMapper _mapper = mapper;
 
         [HttpGet]
         [TypeFilter(typeof(BooksResultFilter))]
@@ -45,6 +44,9 @@ namespace Books.API.Controllers
             {
                 return NotFound();
             }
+
+            var pageCalculator = new ComplicatedPageCalculator();
+            var pagesCount = pageCalculator.CalculateBookPages(id);
 
             //var bookCover = await _booksRepository.GetBookCoverAsync("dummycover");
 
