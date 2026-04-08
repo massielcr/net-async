@@ -6,12 +6,15 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Navigation;
 using System.Text.Json;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace StockAnalyzer.Windows;
 
 public partial class MainWindow : Window
 {
     private static string API_URL = "https://ps-async.fekberg.com/api/stocks";
+    private static readonly HttpClient _httpClient = new();
     private Stopwatch stopwatch = new Stopwatch();
 
     public MainWindow()
@@ -19,20 +22,23 @@ public partial class MainWindow : Window
         InitializeComponent();
     }
 
-    private void Search_Click(object sender, RoutedEventArgs e)
+    private async void Search_Click(object sender, RoutedEventArgs e)
     {
         BeforeLoadingStockData();
 
-        var client = new WebClient();
+        var response = await _httpClient.GetAsync($"{API_URL}/{StockIdentifier.Text}");
 
-        var content = client.DownloadString($"{API_URL}/{StockIdentifier.Text}");
+        if (response.IsSuccessStatusCode)
+        {
+            var content = await response.Content.ReadAsStringAsync();
 
-        // Simulate that the web call takes a very long time
-        Thread.Sleep(10000);
+            // Simulate that the web call takes a very long time
+            await Task.Delay(10000);
 
-        var data = JsonSerializer.Deserialize<IEnumerable<StockPrice>>(content, JsonSerializerOptions.Web);
+            var data = JsonSerializer.Deserialize<IEnumerable<StockPrice>>(content, JsonSerializerOptions.Web);
 
-        Stocks.ItemsSource = data;
+            Stocks.ItemsSource = data;
+        }        
 
         AfterLoadingStockData();
     }
