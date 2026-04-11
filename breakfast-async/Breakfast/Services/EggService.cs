@@ -16,9 +16,16 @@ namespace Breakfast.CL.Services
             return new Egg();
         }
 
-        public Task<Egg> FryEggsAsync(int count)
+        public async Task<Egg> FryEggsAsync(int count)
         {
-            throw new NotImplementedException();
+            Console.WriteLine("Warming the egg pan...");
+            Task.Delay(3000).Wait();
+            Console.WriteLine($"cracking {count} eggs");
+            Console.WriteLine("cooking the eggs ...");
+            Task.Delay(3000).Wait();
+            Console.WriteLine("Put eggs on plate");
+
+            return new Egg();
         }
     }
 }

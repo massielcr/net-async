@@ -21,9 +21,17 @@ namespace Breakfast.CL.Services
             return new Toast();
         }
 
-        public Task<Toast> ToastBreadAsync(int slices)
+        public async Task<Toast> ToastBreadAsync(int slices)
         {
-            throw new NotImplementedException();
+            for (int slice = 0; slice < slices; slice++)
+            {
+                Console.WriteLine("Putting a slice of bread in the toaster");
+            }
+            Console.WriteLine("Start toasting...");
+            Task.Delay(3000).Wait();
+            Console.WriteLine("Remove toast from toaster");
+
+            return new Toast();
         }
     }
 }

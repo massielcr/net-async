@@ -10,9 +10,10 @@ namespace Breakfast.CL.Services
             return new Coffee();
         }
 
-        public Task<Coffee> PourCoffeeAsync()
+        public async Task<Coffee> PourCoffeeAsync()
         {
-            throw new NotImplementedException();
+            Console.WriteLine("Pouring coffee");
+            return new Coffee();
         }
     }
 }

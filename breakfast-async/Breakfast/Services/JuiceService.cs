@@ -10,9 +10,10 @@ namespace Breakfast.CL.Services
             return new Juice();
         }
 
-        public Task<Juice> PourOJAsync()
+        public async Task<Juice> PourOJAsync()
         {
-            throw new NotImplementedException();
+            Console.WriteLine("Pouring orange juice");
+            return new Juice();
         }
     }
 }

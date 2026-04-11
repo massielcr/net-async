@@ -14,7 +14,7 @@ namespace Breakfast.Tests
         private Mock<IJuiceService> _juiceService;
         
 
-        [OneTimeSetUp]
+        [SetUp]
         public void Setup()
         {
             _coffeeService = new Mock<ICoffeeService>();
@@ -34,7 +34,7 @@ namespace Breakfast.Tests
                                          _toastService.Object, 
                                          _juiceService.Object);
 
-            sut.Synchronous();
+            sut.BreakfastSynchronous();
 
             _coffeeService.Verify(c => c.PourCoffee(), Times.Once());
             _eggService.Verify(c => c.FryEggs(2), Times.Once());
@@ -43,6 +43,27 @@ namespace Breakfast.Tests
             _toastService.Verify(c => c.ApplyButter(It.IsAny<Toast>()), Times.Once());
             _toastService.Verify(c => c.ApplyJam(It.IsAny<Toast>()), Times.Once());
             _juiceService.Verify(c => c.PourOJ(), Times.Once());
+        }
+
+        [Test]
+        public async Task BreakfastMakerAwait()
+        {
+
+            var sut = new BreakfastMaker(_coffeeService.Object,
+                                         _eggService.Object,
+                                         _hashBrownService.Object,
+                                         _toastService.Object,
+                                         _juiceService.Object);
+
+            await sut.BreakfastAwait();
+
+            _coffeeService.Verify(c => c.PourCoffeeAsync(), Times.Once());
+            _eggService.Verify(c => c.FryEggsAsync(2), Times.Once());
+            _hashBrownService.Verify(c => c.FryHashBrownsAsync(3), Times.Once());
+            _toastService.Verify(c => c.ToastBreadAsync(2), Times.Once());
+            _toastService.Verify(c => c.ApplyButter(It.IsAny<Toast>()), Times.Once());
+            _toastService.Verify(c => c.ApplyJam(It.IsAny<Toast>()), Times.Once());
+            _juiceService.Verify(c => c.PourOJAsync(), Times.Once());
         }
     }
 }
