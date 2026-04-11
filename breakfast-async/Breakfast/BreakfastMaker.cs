@@ -94,5 +94,82 @@ namespace Breakfast
             Console.WriteLine("Breakfast is ready!");
             Console.WriteLine();
         }
+
+        public async Task BreakfastWhenAll(int eggsCount, int hashBrownsCount, int toastSlices)
+        {
+            var pourCoffeeTask = coffeeService.PourCoffeeAsync();
+            var fryEggsTask = eggService.FryEggsAsync(eggsCount);
+            var fryHashBrownsTask = hashBrownService.FryHashBrownsAsync(hashBrownsCount);
+            var makeToastWithButterAndJamTask = toastService.MakeToastWithButterAndJamAsync(toastSlices);
+            var pourOJTask = juiceService.PourOJAsync();
+
+            await Task.WhenAll(pourCoffeeTask, fryEggsTask, fryHashBrownsTask, makeToastWithButterAndJamTask, pourOJTask);
+
+            Console.WriteLine("coffee is ready");
+            Console.WriteLine();
+
+            Console.WriteLine("eggs are ready");
+            Console.WriteLine();
+
+            Console.WriteLine("hash browns are ready");
+            Console.WriteLine();
+
+            Console.WriteLine("toast is ready");
+            Console.WriteLine();
+
+            Console.WriteLine("oj is ready");
+            Console.WriteLine();
+
+            Console.WriteLine("Breakfast is ready!");
+            Console.WriteLine();
+        }
+
+        public async Task BreakfastWhenAny(int eggsCount, int hashBrownsCount, int toastSlices)
+        {
+            var pourCoffeeTask = coffeeService.PourCoffeeAsync();
+            var fryEggsTask = eggService.FryEggsAsync(eggsCount);
+            var fryHashBrownsTask = hashBrownService.FryHashBrownsAsync(hashBrownsCount);
+            var makeToastWithButterAndJamTask = toastService.MakeToastWithButterAndJamAsync(toastSlices);
+            var pourOJTask = juiceService.PourOJAsync();
+
+            var breakfastTasks = new List<Task> { pourCoffeeTask, fryEggsTask, fryHashBrownsTask, makeToastWithButterAndJamTask, pourOJTask };
+
+            await Task.WhenAll(pourCoffeeTask, fryEggsTask, fryHashBrownsTask, makeToastWithButterAndJamTask, pourOJTask);
+            while (breakfastTasks.Count > 0)
+            {
+                Task finishedTask = await Task.WhenAny(breakfastTasks);
+                if (finishedTask == pourCoffeeTask)
+                {
+                    Console.WriteLine("coffee is ready");
+                    Console.WriteLine();
+                }
+                else if (finishedTask == fryEggsTask)
+                {
+                    Console.WriteLine("eggs are ready");
+                    Console.WriteLine();
+                }
+                else if (finishedTask == fryHashBrownsTask)
+                {
+                    Console.WriteLine("hash browns are ready");
+                    Console.WriteLine();
+                }
+                else if (finishedTask == makeToastWithButterAndJamTask)
+                {
+                    Console.WriteLine("toast is ready");
+                    Console.WriteLine();
+                }
+                else if (finishedTask == pourOJTask)
+                {
+                    Console.WriteLine("oj is ready");
+                    Console.WriteLine();
+                }
+
+                await finishedTask;
+                breakfastTasks.Remove(finishedTask);
+            }
+
+            Console.WriteLine("Breakfast is ready!");
+            Console.WriteLine();
+        }
     }
 }

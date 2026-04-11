@@ -110,5 +110,45 @@ namespace Breakfast.Tests
             _hashBrownService.Verify(c => c.FryHashBrownsAsync(hashBrownsCount), Times.Once());
             _juiceService.Verify(c => c.PourOJAsync(), Times.Once());
         }
+
+        [Test]
+        [TestCase(2, 3, 2)]
+        public async Task BreakfastMakerWhenAll(int eggsCount, int hashBrownsCount, int toastSlices)
+        {
+
+            var sut = new BreakfastMaker(_coffeeService.Object,
+                                         _eggService.Object,
+                                         _hashBrownService.Object,
+                                         _toastService.Object,
+                                         _juiceService.Object);
+
+            await sut.BreakfastWhenAll(eggsCount, hashBrownsCount, toastSlices);
+
+            _coffeeService.Verify(c => c.PourCoffeeAsync(), Times.Once());
+            _eggService.Verify(c => c.FryEggsAsync(eggsCount), Times.Once());
+            _hashBrownService.Verify(c => c.FryHashBrownsAsync(hashBrownsCount), Times.Once());
+            _toastService.Verify(c => c.MakeToastWithButterAndJamAsync(toastSlices), Times.Once());
+            _juiceService.Verify(c => c.PourOJAsync(), Times.Once());
+        }
+
+        [Test]
+        [TestCase(2, 3, 2)]
+        public async Task BreakfastMakerWhenAnyl(int eggsCount, int hashBrownsCount, int toastSlices)
+        {
+
+            var sut = new BreakfastMaker(_coffeeService.Object,
+                                         _eggService.Object,
+                                         _hashBrownService.Object,
+                                         _toastService.Object,
+                                         _juiceService.Object);
+
+            await sut.BreakfastWhenAny(eggsCount, hashBrownsCount, toastSlices);
+
+            _coffeeService.Verify(c => c.PourCoffeeAsync(), Times.Once());
+            _eggService.Verify(c => c.FryEggsAsync(eggsCount), Times.Once());
+            _hashBrownService.Verify(c => c.FryHashBrownsAsync(hashBrownsCount), Times.Once());
+            _toastService.Verify(c => c.MakeToastWithButterAndJamAsync(toastSlices), Times.Once());
+            _juiceService.Verify(c => c.PourOJAsync(), Times.Once());
+        }
     }
 }

@@ -21,6 +21,8 @@ internal class Program
 
         await breakfastMaker.BreakfastAwait(2, 3, 2);
 
+        await breakfastMaker.BreakfastWhenAny(2, 3, 2);
+
         Console.ReadLine();
     }
 }
