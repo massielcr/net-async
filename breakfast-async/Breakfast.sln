@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 18
+VisualStudioVersion = 18.4.11626.88
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Breakfast", "Breakfast\Breakfast.csproj", "{5CCB33D8-FAE9-EBFA-1567-76B078B5F58D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Breakfast.Tests", "Breakfast.Tests\Breakfast.Tests.csproj", "{0CCC77DE-0418-4444-8B05-18789A328AD5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5CCB33D8-FAE9-EBFA-1567-76B078B5F58D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5CCB33D8-FAE9-EBFA-1567-76B078B5F58D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5CCB33D8-FAE9-EBFA-1567-76B078B5F58D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5CCB33D8-FAE9-EBFA-1567-76B078B5F58D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0CCC77DE-0418-4444-8B05-18789A328AD5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0CCC77DE-0418-4444-8B05-18789A328AD5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0CCC77DE-0418-4444-8B05-18789A328AD5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0CCC77DE-0418-4444-8B05-18789A328AD5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E90D3EC1-3FD0-4195-A872-E13BEF77CB76}
+	EndGlobalSection
+EndGlobal
