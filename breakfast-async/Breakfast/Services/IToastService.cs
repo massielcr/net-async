@@ -8,6 +8,8 @@ namespace Breakfast.CL.Services
 
         Task<Toast> ToastBreadAsync(int slices);
 
+        Task<Toast> MakeToastWithButterAndJamAsync(int slices);
+
         void ApplyButter(Toast toast);
 
         void ApplyJam(Toast toast);

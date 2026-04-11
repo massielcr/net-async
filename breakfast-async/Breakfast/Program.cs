@@ -19,7 +19,7 @@ internal class Program
 
         //breakfastMaker.BreakfastSynchronous();
 
-        await breakfastMaker.BreakfastAwait();
+        await breakfastMaker.BreakfastAwait(2, 3, 2);
 
         Console.ReadLine();
     }
