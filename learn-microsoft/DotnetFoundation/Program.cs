@@ -1,8 +1,16 @@
+using DotnetFoundationAPI.Services;
+using System.Text.RegularExpressions;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+builder.Services.AddHttpClient();
+
+
+
+builder.Services.AddScoped<IDotnetFoundation, DotnetFoundation>();
 
 var app = builder.Build();
 
@@ -13,29 +21,39 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
 
-app.MapGet("/weatherforecast", () =>
+#region minimal-api
+
+app.MapGet("/api/iobound", async (IDotnetFoundation client) =>
 {
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
+    var response = await client.GetStringAsync();
+    var result = Regex.Matches(response, @"\.NET").Count;
+
+    return Results.Ok(result);
 })
-.WithName("GetWeatherForecast");
+.WithName("GetIObound");
+
+app.MapGet("/api/cpubound", async (IDotnetFoundation client) =>
+{
+    var result = await Task.Run(() =>
+    {
+        int total = 0;
+        var rnd = new Random();
+
+        for (int i = 0; i < 1000; i++)
+        {
+            total += rnd.Next(1, 7);
+        }
+
+        return total;
+    });
+
+    return Results.Ok(result);
+})
+.WithName("GetCPUbound");
+
+#endregion
 
 app.Run();
-
-internal record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}

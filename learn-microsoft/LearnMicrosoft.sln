@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Breakfast", "Breakfast\Brea
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Breakfast.Tests", "Breakfast.Tests\Breakfast.Tests.csproj", "{0CCC77DE-0418-4444-8B05-18789A328AD5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotnetFoundation", "DotnetFoundation\DotnetFoundation.csproj", "{99EED0BB-3D88-4771-90C8-82410F6583D4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotnetFoundationAPI", "DotnetFoundation\DotnetFoundationAPI.csproj", "{99EED0BB-3D88-4771-90C8-82410F6583D4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
