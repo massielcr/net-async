@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Breakfast", "Breakfast\Brea
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Breakfast.Tests", "Breakfast.Tests\Breakfast.Tests.csproj", "{0CCC77DE-0418-4444-8B05-18789A328AD5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotnetFoundation", "DotnetFoundation\DotnetFoundation.csproj", "{99EED0BB-3D88-4771-90C8-82410F6583D4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{0CCC77DE-0418-4444-8B05-18789A328AD5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0CCC77DE-0418-4444-8B05-18789A328AD5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0CCC77DE-0418-4444-8B05-18789A328AD5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{99EED0BB-3D88-4771-90C8-82410F6583D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{99EED0BB-3D88-4771-90C8-82410F6583D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{99EED0BB-3D88-4771-90C8-82410F6583D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{99EED0BB-3D88-4771-90C8-82410F6583D4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
