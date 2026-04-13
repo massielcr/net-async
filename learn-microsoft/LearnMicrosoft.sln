@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Breakfast.Tests", "Breakfas
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotnetFoundationAPI", "DotnetFoundation\DotnetFoundationAPI.csproj", "{99EED0BB-3D88-4771-90C8-82410F6583D4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsyncProgrammingScenarios", "AsyncProgrammingScenarios\AsyncProgrammingScenarios.csproj", "{6D7655F4-0133-47D2-AFCB-B1747191B47B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{99EED0BB-3D88-4771-90C8-82410F6583D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{99EED0BB-3D88-4771-90C8-82410F6583D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{99EED0BB-3D88-4771-90C8-82410F6583D4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D7655F4-0133-47D2-AFCB-B1747191B47B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D7655F4-0133-47D2-AFCB-B1747191B47B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D7655F4-0133-47D2-AFCB-B1747191B47B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D7655F4-0133-47D2-AFCB-B1747191B47B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

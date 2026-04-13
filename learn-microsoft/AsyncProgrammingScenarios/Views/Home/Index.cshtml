@@ -1,0 +1,52 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Asynchronous programming scenarios</h1>
+
+    <br />
+    <button id="dotNetCountAPIButton">DotNetCount API</button>
+    <button id="usersDBButton">Users DB</button>
+    <button id="calculateCPUButton">Calculate CPU</button>
+    <br /><br />
+
+    <ul id="console-output" style="color: green; font-family: monospace; list-style-type: none"></ul>
+</div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/9.0.6/signalr.min.js"></script>
+<script>
+    const connection = new signalR.HubConnectionBuilder()
+    .withUrl("/loggerHub")
+    .build();
+
+
+    connection.on("ReceiveLog", (message) => {
+        const li = document.createElement("li");
+        li.textContent = `> ${message}`;
+
+        document.getElementById("console-output").appendChild(li);
+    });
+
+    connection.start();
+
+
+    // Download Button Logic
+    document.getElementById('dotNetCountAPIButton').addEventListener('click', async () => {
+        document.getElementById('console-output').innerHTML = "";
+        await fetch("/DotNetCountAPI");
+    });
+
+    // Calculate Button Logic
+    document.getElementById('usersDBButton').addEventListener('click', async () => {
+        document.getElementById('console-output').innerHTML = "";
+        await fetch('/UsersDB');
+    });
+
+    document.getElementById('calculateCPUButton').addEventListener('click', async () => {
+        document.getElementById('console-output').innerHTML = "";
+        await fetch('/CalculateCPU');
+    });
+
+</script>
