@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotnetFoundationAPI", "Dotn
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsyncProgrammingScenarios", "AsyncProgrammingScenarios\AsyncProgrammingScenarios.csproj", "{6D7655F4-0133-47D2-AFCB-B1747191B47B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsyncReturnTypes", "AsyncReturnTypes\AsyncReturnTypes.csproj", "{0DF97AB6-EC0F-4113-AAE9-7EEACCAF09FA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{6D7655F4-0133-47D2-AFCB-B1747191B47B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6D7655F4-0133-47D2-AFCB-B1747191B47B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6D7655F4-0133-47D2-AFCB-B1747191B47B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0DF97AB6-EC0F-4113-AAE9-7EEACCAF09FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0DF97AB6-EC0F-4113-AAE9-7EEACCAF09FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0DF97AB6-EC0F-4113-AAE9-7EEACCAF09FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0DF97AB6-EC0F-4113-AAE9-7EEACCAF09FA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

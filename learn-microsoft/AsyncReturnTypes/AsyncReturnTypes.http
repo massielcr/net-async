@@ -1,0 +1,11 @@
+@AsyncReturnTypes_HostAddress = http://localhost:5269
+
+GET {{AsyncReturnTypes_HostAddress}}/returntypes/
+Accept: application/json
+
+###
+
+GET {{AsyncReturnTypes_HostAddress}}/returntypes/1
+Accept: application/json
+
+###
