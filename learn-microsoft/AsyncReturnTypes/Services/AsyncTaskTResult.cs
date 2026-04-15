@@ -1,8 +1,8 @@
 ﻿namespace AsyncReturnTypes.Services
 {
-    public static class AsyncTaskTResult
+    public class AsyncTaskTResult : IAsyncTaskTResult
     {
-        public static async Task<int> GetLeisureHoursAsync()
+        public async Task<int> GetLeisureHoursAsync()
         {
             DayOfWeek today = await Task.FromResult(DateTime.Now.DayOfWeek);
 

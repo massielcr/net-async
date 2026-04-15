@@ -18,7 +18,6 @@
 
     <button id="taskButton">Task</button>
     <button id="taskTResultButton">Task&lt;TResult&gt;</button>
-    <button id="voidButton">Void</button>
     <button id="valueTaskButton">ValueTask&lt;TResult&gt;</button>
     <button id="streamsButton">Streams</button>
 
@@ -46,7 +45,6 @@
 
             const taskButton = document.getElementById('taskButton');
             const taskTResultButton = document.getElementById('taskTResultButton');
-            const voidButton = document.getElementById('voidButton');
             const valueTaskButton = document.getElementById('valueTaskButton');
             const streamsButton = document.getElementById('streamsButton');
 
@@ -71,12 +69,6 @@
                     li.textContent = `> Error: ${response.statusText}`;
                     consoleoutput.appendChild(li);
                 }
-            });
-
-            voidButton.addEventListener('click', async () => {
-                const consoleoutput = document.getElementById('console-output');
-                consoleoutput.innerHTML = '';
-                const response = await fetch('/api/void');
             });
 
             valueTaskButton.addEventListener('click', async () => {

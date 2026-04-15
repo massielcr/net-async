@@ -17,6 +17,7 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 });
 
 builder.Services.AddScoped<IAsyncTask, AsyncTask>();
+builder.Services.AddScoped<IAsyncTaskTResult, AsyncTaskTResult>();
 builder.Services.AddScoped<IAsyncValueTask, AsyncValueTask>();
 
 var app = builder.Build();
@@ -40,17 +41,11 @@ asyncReturnTypesApi.MapGet("/task/", async Task (IHubContext<NotificationHub> hu
 
 }).WithName("Task");
 
-asyncReturnTypesApi.MapGet("/tasktresult", async Task<int> () =>
+asyncReturnTypesApi.MapGet("/tasktresult", async Task<int> (IAsyncTaskTResult asyncTaskTResult) =>
 {
-    return await AsyncTaskTResult.GetLeisureHoursAsync();
+    return await asyncTaskTResult.GetLeisureHoursAsync();
 })
 .WithName("TaskTResult");
-
-asyncReturnTypesApi.MapGet("/void", async void () =>
-{
-
-})
-.WithName("Void");
 
 asyncReturnTypesApi.MapGet("/valuetask", async ValueTask<int> (IHubContext<NotificationHub> hubContext, IAsyncValueTask valueTask) =>
 {
