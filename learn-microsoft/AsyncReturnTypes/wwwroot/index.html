@@ -58,25 +58,47 @@
 
             taskTResultButton.addEventListener('click', async () => {
                 const consoleoutput = document.getElementById('console-output');
-                consoleoutput.innerHTML = '';   
+                consoleoutput.innerHTML = '';
+
                 const response = await fetch('/api/tasktresult');
+                if (response.ok) {
+                    const data = await response.json();
+                    const li = document.createElement("li");
+                    li.textContent = `> Received: ${data}`;
+                    consoleoutput.appendChild(li);
+                } else {
+                    const li = document.createElement("li");
+                    li.textContent = `> Error: ${response.statusText}`;
+                    consoleoutput.appendChild(li);
+                }
             });
 
             voidButton.addEventListener('click', async () => {
                 const consoleoutput = document.getElementById('console-output');
-                consoleoutput.innerHTML = '';  
+                consoleoutput.innerHTML = '';
                 const response = await fetch('/api/void');
             });
 
             valueTaskButton.addEventListener('click', async () => {
                 const consoleoutput = document.getElementById('console-output');
-                consoleoutput.innerHTML = '';  
+                consoleoutput.innerHTML = '';
+
                 const response = await fetch('/api/valuetask');
+                if (response.ok) {
+                    const data = await response.json();
+                    const li = document.createElement("li");
+                    li.textContent = `> Received: ${data}`;
+                    consoleoutput.appendChild(li);
+                } else {
+                    const li = document.createElement("li");
+                    li.textContent = `> Error: ${response.statusText}`;
+                    consoleoutput.appendChild(li);
+                }
             });
 
             streamsButton.addEventListener('click', async () => {
                 const consoleoutput = document.getElementById('console-output');
-                consoleoutput.innerHTML = '';  
+                consoleoutput.innerHTML = '';
                 const response = await fetch('/api/streams');
             });
 

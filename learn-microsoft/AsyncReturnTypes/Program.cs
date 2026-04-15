@@ -16,6 +16,9 @@ builder.Services.ConfigureHttpJsonOptions(options =>
     options.SerializerOptions.TypeInfoResolverChain.Insert(0, AppJsonSerializerContext.Default);
 });
 
+builder.Services.AddScoped<IAsyncTask, AsyncTask>();
+builder.Services.AddScoped<IAsyncValueTask, AsyncValueTask>();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -29,27 +32,34 @@ app.UseStaticFiles();
 
 var asyncReturnTypesApi = app.MapGroup("/api");
 
-asyncReturnTypesApi.MapGet("/task/", async Task (IHubContext<NotificationHub> hubContext) =>
+asyncReturnTypesApi.MapGet("/task/", async Task (IHubContext<NotificationHub> hubContext, IAsyncTask _asyncTask) =>
 {
-    return;
+    await hubContext.Clients.All.SendAsync("notify", "Sorry for the delay...");
+
+    await _asyncTask.DisplayCurrentInfoAsync();
 
 }).WithName("Task");
 
 asyncReturnTypesApi.MapGet("/tasktresult", async Task<int> () =>
 {
-    return 100;
+    return await AsyncTaskTResult.GetLeisureHoursAsync();
 })
 .WithName("TaskTResult");
 
 asyncReturnTypesApi.MapGet("/void", async void () =>
 {
-    return;
+
 })
 .WithName("Void");
 
-asyncReturnTypesApi.MapGet("/valuetask", async ValueTask<int> () =>
+asyncReturnTypesApi.MapGet("/valuetask", async ValueTask<int> (IHubContext<NotificationHub> hubContext, IAsyncValueTask valueTask) =>
 {
-    return 500;
+    await hubContext.Clients.All.SendAsync("notify", "Shaking dice...");
+
+    int roll1 = await valueTask.RollAsync();
+    int roll2 = await valueTask.RollAsync();
+
+    return roll1 + roll2;
 })
 .WithName("ValueTaskTResult");
 
@@ -61,9 +71,6 @@ asyncReturnTypesApi.MapGet("/streams", async (IHubContext<NotificationHub> hubCo
     }
 })
 .WithName("Streams");
-
-
-
 
 
 app.Run();
