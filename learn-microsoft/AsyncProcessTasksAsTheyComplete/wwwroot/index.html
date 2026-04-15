@@ -1,0 +1,53 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Process asynchronous tasks as they complete</title>
+    <style>
+        body {
+            margin: 0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Process asynchronous tasks as they complete</h1>
+
+    <br />
+
+    <button id="startButton">Start</button>
+
+    <br /><br />
+
+    <ul id="console-output" style="color: green; font-family: monospace; list-style-type: none"></ul>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/9.0.6/signalr.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const connection = new signalR.HubConnectionBuilder()
+                .withUrl("/notificationHub")
+                .build();
+
+            connection.on("notify", (message) => {
+                const li = document.createElement("li");
+                li.textContent = `> ${message}`;
+                document.getElementById("console-output").appendChild(li);
+            });
+
+            connection.start()
+                .then(() => console.log("Connected to SignalR Hub"))
+                .catch(err => console.error("SignalR Connection Error: ", err));
+
+            const startButton = document.getElementById('startButton');
+
+            startButton.addEventListener('click', async () => {
+                const consoleoutput = document.getElementById('console-output');
+                consoleoutput.innerHTML = '';
+                const response = await fetch('/api/sumpagesizes');
+            });
+        });
+    </script>
+
+</body>
+</html>
