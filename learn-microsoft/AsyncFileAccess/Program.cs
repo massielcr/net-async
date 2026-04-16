@@ -1,6 +1,7 @@
 using AsyncFileAccess.Services;
 using Microsoft.AspNetCore.Http.HttpResults;
 using System.Text.Json.Serialization;
+using static System.Net.Mime.MediaTypeNames;
 
 var builder = WebApplication.CreateSlimBuilder(args);
 
@@ -60,12 +61,16 @@ fileAccessApi.MapGet("/readtextfilestream", async (IFileService fileService) =>
 fileAccessApi.MapGet("/writetextfile", async (IFileService fileService) =>
 {
     await fileService.WriteTextFileAsync("myfiles/WriteTextFile.txt", "Hello, WriteTextFile World!");
+
+    return Results.Ok("Success Write Text File");
 })
 .WithName("WriteTextFile");
 
 fileAccessApi.MapGet("/writetextfilestream", async (IFileService fileService) =>
 {
-    await fileService.WriteTextFileAsync("myfiles/WriteTextFileStream.txt", "Hello, WriteTextFileStream World!");
+    await fileService.WriteTextFileStreamAsync("myfiles/WriteTextFileStream.txt", "Hello, WriteTextFileStream World!");
+
+    return Results.Ok("Success Write Text FileStream");
 })
 .WithName("WriteTextFileStream");
 
@@ -73,13 +78,17 @@ fileAccessApi.MapGet("/writetextfilestream", async (IFileService fileService) =>
 
 fileAccessApi.MapGet("/writetextfileparallel", async (IFileService fileService) =>
 {
-    await fileService.WriteTextFileParallelAsync("myfiles/WriteTextFileParallel");
+    await fileService.WriteTextFileParallelAsync("myfiles/WriteTextFileParallel/");
+
+    return Results.Ok("Success Write Text File Parallel");
 })
 .WithName("WriteTextFileParallel");
 
 fileAccessApi.MapGet("/writetextfilestreamparallel", async (IFileService fileService) =>
 {
-    await fileService.WriteTextFileStreamParallelAsync("myfiles/WriteTextFileStreamParallel");
+    await fileService.WriteTextFileStreamParallelAsync("myfiles/WriteTextFileStreamParallel/");
+
+    return Results.Ok("Success Write Text FileStream Parallel");
 })
 .WithName("WriteTextFileStreamParallel");
 

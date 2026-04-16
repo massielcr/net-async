@@ -82,13 +82,15 @@ namespace AsyncFileAccess.Services
 
         public async Task WriteTextFileParallelAsync(string folderPath)
         {
-            string folder = Directory.CreateDirectory(folderPath).Name;
+            await DeleteFolderAsync(folderPath);
+
+            string folder = Directory.CreateDirectory(folderPath).FullName;
             IList<Task> writeTaskList = [];
 
             for (int index = 11; index <= 20; ++index)
             {
                 string fileName = $"file-{index:00}.txt";
-                string filePath = $"{folder}/{fileName}";
+                string filePath = Path.Combine(folder, fileName);
                 string text = $"In file {index}{Environment.NewLine}";
 
                 writeTaskList.Add(File.WriteAllTextAsync(filePath, text));
@@ -103,14 +105,16 @@ namespace AsyncFileAccess.Services
 
             try
             {
-                string folder = Directory.CreateDirectory(folderPath).Name;
+                await DeleteFolderAsync(folderPath);
+
+                string folder = Directory.CreateDirectory(folderPath).FullName;
 
                 IList<Task> writeTaskList = [];
 
                 for (int index = 1; index <= 10; ++index)
                 {
                     string fileName = $"filestream-{index:00}.txt";
-                    string filePath = $"{folder}/{fileName}";
+                    string filePath = Path.Combine(folder, fileName);
 
                     string text = $"In file Stream {index}{Environment.NewLine}";
                     byte[] encodedText = Encoding.Unicode.GetBytes(text);
@@ -136,6 +140,24 @@ namespace AsyncFileAccess.Services
                     sourceStream.Close();
                 }
             }
-        }        
+        }
+
+        private async Task<bool> DeleteFolderAsync(string folderPath)
+        {
+
+            try
+            {
+                if (Directory.Exists(folderPath))
+                {
+                    await Task.Run(() => Directory.Delete(folderPath, true));
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
     }
 }

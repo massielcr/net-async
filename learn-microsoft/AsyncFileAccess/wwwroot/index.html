@@ -41,67 +41,112 @@
             const writeTextFileStreamParallelButton = document.getElementById("writeTextFileStreamParallelButton");
 
             readTextFileButton.addEventListener("click", () => {
+                const consoleOutput = document.getElementById("console-output");
+                consoleOutput.textContent = '';
+
                 fetch("/api/readtextfile")
                     .then(response => {
                         if (!response.ok) {
-                            return response.text().then(err => { throw new Error(err.detail || "Error reading file") });
+                            throw new Error(text || "Error reading file");
                         }
                         return response.text();
                     })
                     .then(data => {
-                        const consoleOutput = document.getElementById("console-output");
-                        consoleOutput.innerHTML = data;
+                        
+                        consoleOutput.textContent = data;
                     })
                     .catch(error => {
-                        document.getElementById("console-output").textContent = error.message;
+                        consoleOutput.textContent = error.message;
                     });
             });
             readTextFileStreamButton.addEventListener("click", () => {
+                const consoleOutput = document.getElementById("console-output");
+                consoleOutput.textContent = '';
+
                 fetch("/api/readtextfilestream")
                     .then(response => {
                         if (!response.ok) {
-                            return response.text().then(err => { throw new Error(err.detail || "Error reading file") });
+                            throw new Error(text || "Error reading file");
+                        }
+                        return response.text();
+                    })
+                    .then(data => {                        
+                        consoleOutput.textContent = data;
+                    })
+                    .catch(error => {
+                        consoleOutput.textContent = error.message;
+                    });
+            });
+            writeTextFileButton.addEventListener("click", () => {
+                const consoleOutput = document.getElementById("console-output");
+                consoleOutput.textContent = '';
+
+                fetch("/api/writetextfile")
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(text || "Error reading file");
                         }
                         return response.text();
                     })
                     .then(data => {
-                        const consoleOutput = document.getElementById("console-output");
-                        consoleOutput.innerHTML = data;
+                        consoleOutput.textContent = data;
                     })
                     .catch(error => {
-                       document.getElementById("console-output").textContent = error.message;
-                    });
-            });
-            writeTextFileButton.addEventListener("click", () => {
-                fetch("/api/writetextfile")
-                    .then(response => response.text())
-                    .then(data => {
-                        const consoleOutput = document.getElementById("console-output");
-                        consoleOutput.innerHTML += `<li>${data}</li>`;
+                        consoleOutput.textContent = error.message;
                     });
             });
             writeTextFileStreamButton.addEventListener("click", () => {
+                const consoleOutput = document.getElementById("console-output");
+                consoleOutput.textContent = '';
+
                 fetch("/api/writetextfilestream")
-                    .then(response => response.text())
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(text || "Error reading file");
+                        }
+                        return response.text();
+                    })
                     .then(data => {
-                        const consoleOutput = document.getElementById("console-output");
-                        consoleOutput.innerHTML += `<li>${data}</li>`;
+                        consoleOutput.textContent = data;
+                    })
+                    .catch(error => {
+                        consoleOutput.textContent = error.message;
                     });
             });
             writeTextFileParallelButton.addEventListener("click", () => {
+                const consoleOutput = document.getElementById("console-output");
+                consoleOutput.textContent = '';
+
                 fetch("/api/writetextfileparallel")
-                    .then(response => response.text())
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(text || "Error reading file");
+                        }
+                        return response.text();
+                    })
                     .then(data => {
-                        const consoleOutput = document.getElementById("console-output");
-                        consoleOutput.innerHTML += `<li>${data}</li>`;
+                        consoleOutput.textContent = data;
+                    })
+                    .catch(error => {
+                        consoleOutput.textContent = error.message;
                     });
             });
             writeTextFileStreamParallelButton.addEventListener("click", () => {
+                const consoleOutput = document.getElementById("console-output");
+                consoleOutput.textContent = '';
+
                 fetch("/api/writetextfilestreamparallel")
-                    .then(response => response.text())
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(text || "Error reading file");
+                        }
+                        return response.text();
+                    })
                     .then(data => {
-                        const consoleOutput = document.getElementById("console-output");
-                        consoleOutput.innerHTML += `<li>${data}</li>`;
+                        consoleOutput.textContent = data;
+                    })
+                    .catch(error => {
+                        consoleOutput.textContent = error.message;
                     });
             });
         });
