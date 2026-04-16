@@ -1,0 +1,110 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Asynchronous file access</title>
+    <style>
+        body {
+            margin: 0;
+            text-align: center;
+        }
+        p {
+            width: 60%;
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Asynchronous file access</h1>
+
+    <br />
+
+    <button id="readTextFileButton">Read Text File</button>
+    <button id="readTextFileStreamButton">Read Text FileStream</button>
+    <button id="writeTextFileButton">Write Text File</button>
+    <button id="writeTextFileStreamButton">Write Text FileStream</button>
+    <button id="writeTextFileParallelButton">Write Text FileParallel</button>
+    <button id="writeTextFileStreamParallelButton">Write Text FileStreamParallel</button>
+
+    <br /><br />
+
+    <p id="console-output" style="color: green; font-family: monospace;"></p>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+
+            const readTextFileButton = document.getElementById("readTextFileButton");
+            const readTextFileStreamButton = document.getElementById("readTextFileStreamButton");
+            const writeTextFileButton = document.getElementById("writeTextFileButton");
+            const writeTextFileStreamButton = document.getElementById("writeTextFileStreamButton");
+            const writeTextFileParallelButton = document.getElementById("writeTextFileParallelButton");
+            const writeTextFileStreamParallelButton = document.getElementById("writeTextFileStreamParallelButton");
+
+            readTextFileButton.addEventListener("click", () => {
+                fetch("/api/readtextfile")
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.text().then(err => { throw new Error(err.detail || "Error reading file") });
+                        }
+                        return response.text();
+                    })
+                    .then(data => {
+                        const consoleOutput = document.getElementById("console-output");
+                        consoleOutput.innerHTML = data;
+                    })
+                    .catch(error => {
+                        document.getElementById("console-output").textContent = error.message;
+                    });
+            });
+            readTextFileStreamButton.addEventListener("click", () => {
+                fetch("/api/readtextfilestream")
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.text().then(err => { throw new Error(err.detail || "Error reading file") });
+                        }
+                        return response.text();
+                    })
+                    .then(data => {
+                        const consoleOutput = document.getElementById("console-output");
+                        consoleOutput.innerHTML = data;
+                    })
+                    .catch(error => {
+                       document.getElementById("console-output").textContent = error.message;
+                    });
+            });
+            writeTextFileButton.addEventListener("click", () => {
+                fetch("/api/writetextfile")
+                    .then(response => response.text())
+                    .then(data => {
+                        const consoleOutput = document.getElementById("console-output");
+                        consoleOutput.innerHTML += `<li>${data}</li>`;
+                    });
+            });
+            writeTextFileStreamButton.addEventListener("click", () => {
+                fetch("/api/writetextfilestream")
+                    .then(response => response.text())
+                    .then(data => {
+                        const consoleOutput = document.getElementById("console-output");
+                        consoleOutput.innerHTML += `<li>${data}</li>`;
+                    });
+            });
+            writeTextFileParallelButton.addEventListener("click", () => {
+                fetch("/api/writetextfileparallel")
+                    .then(response => response.text())
+                    .then(data => {
+                        const consoleOutput = document.getElementById("console-output");
+                        consoleOutput.innerHTML += `<li>${data}</li>`;
+                    });
+            });
+            writeTextFileStreamParallelButton.addEventListener("click", () => {
+                fetch("/api/writetextfilestreamparallel")
+                    .then(response => response.text())
+                    .then(data => {
+                        const consoleOutput = document.getElementById("console-output");
+                        consoleOutput.innerHTML += `<li>${data}</li>`;
+                    });
+            });
+        });
+    </script>
+</body>
+</html>

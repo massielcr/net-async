@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsyncReturnTypes", "AsyncRe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsyncProcessTasksAsTheyComplete", "AsyncProcessTasksAsTheyComplete\AsyncProcessTasksAsTheyComplete.csproj", "{F1B5143D-8D2B-495D-9C22-EA714105FBD3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsyncFileAccess", "AsyncFileAccess\AsyncFileAccess.csproj", "{CAC24DCC-C379-4A31-8B44-426278734AAC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{F1B5143D-8D2B-495D-9C22-EA714105FBD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F1B5143D-8D2B-495D-9C22-EA714105FBD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F1B5143D-8D2B-495D-9C22-EA714105FBD3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CAC24DCC-C379-4A31-8B44-426278734AAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CAC24DCC-C379-4A31-8B44-426278734AAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CAC24DCC-C379-4A31-8B44-426278734AAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CAC24DCC-C379-4A31-8B44-426278734AAC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
