@@ -1,0 +1,86 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Cancel async tasks after a period of time</title>
+    <style>
+        body {
+            margin: 0;
+            text-align: center;
+        }
+        ul {
+            width: 60%;
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Cancel async tasks after a period of time</h1>
+
+    <br />
+
+    <button id="startButton">Start</button>
+    <button id="cancelButton">Cancel</button>
+
+    <br /><br />
+
+    <ul id="console-output" style="color: green; font-family: monospace; list-style: none; padding: 0;"></ul>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/9.0.6/signalr.min.js"></script>
+    <script>
+
+        document.addEventListener("DOMContentLoaded", () => {
+            let controller;
+
+            const startButton = document.getElementById('startButton');
+            const cancelButton = document.getElementById('cancelButton');
+            const consoleOutput = document.getElementById('console-output');
+
+            const connection = new signalR.HubConnectionBuilder()
+                .withUrl("/notificationHub")
+                .build();
+
+            connection.on("notify", (message) => {
+                const li = document.createElement("li");
+                li.textContent = `> ${message}`;
+                consoleOutput.appendChild(li);
+            });
+
+            connection.start()
+                .then(() => console.log("Connected to SignalR Hub"))
+                .catch(err => console.error("SignalR Connection Error: ", err));
+
+
+            startButton.addEventListener('click', async () => {
+                consoleOutput.textContent = '';
+
+                controller = new AbortController();
+                const signal = controller.signal;
+
+                try {
+                    const response = await fetch('/api/start', { signal });
+
+                    const li = document.createElement("li");
+                    li.textContent = `> Done`;
+                    consoleOutput.appendChild(li);
+
+                } catch (err) {
+                    if (err.name === 'AbortError') {
+                        console.log("> Task was cancelled by the user.");
+                    } else {
+                        console.log(`> Error: ${err.message}`);
+                    }
+                }
+            });
+
+            cancelButton.addEventListener('click', () => {
+                if (controller) {
+                    controller.abort();
+                }
+            });
+        });
+
+    </script>
+
+</body>
+</html >
