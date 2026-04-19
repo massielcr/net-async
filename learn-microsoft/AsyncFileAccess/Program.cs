@@ -1,7 +1,5 @@
 using AsyncFileAccess.Services;
-using Microsoft.AspNetCore.Http.HttpResults;
 using System.Text.Json.Serialization;
-using static System.Net.Mime.MediaTypeNames;
 
 var builder = WebApplication.CreateSlimBuilder(args);
 

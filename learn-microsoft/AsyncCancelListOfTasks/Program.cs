@@ -1,4 +1,5 @@
-using Microsoft.AspNetCore.Http.HttpResults;
+using AsyncCancelListOfTasks.Hubs;
+using AsyncCancelListOfTasks.Services;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateSlimBuilder(args);
@@ -10,6 +11,13 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+builder.Services.AddSignalR()
+    .AddJsonProtocol(options =>
+    {
+        options.PayloadSerializerOptions.TypeInfoResolverChain.Insert(0, AppJsonSerializerContext.Default);
+    });
+
+builder.Services.AddScoped<IMicrosoftService, MicrosoftService>();
 
 var app = builder.Build();
 
@@ -17,31 +25,36 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
+app.UseStaticFiles();
 
-Todo[] sampleTodos =
-[
-    new(1, "Walk the dog"),
-    new(2, "Do the dishes", DateOnly.FromDateTime(DateTime.Now)),
-    new(3, "Do the laundry", DateOnly.FromDateTime(DateTime.Now.AddDays(1))),
-    new(4, "Clean the bathroom"),
-    new(5, "Clean the car", DateOnly.FromDateTime(DateTime.Now.AddDays(2)))
-];
+app.MapHub<NotificationHub>("/notificationHub");
 
-var todosApi = app.MapGroup("/todos");
-todosApi.MapGet("/", () => sampleTodos)
-        .WithName("GetTodos");
 
-todosApi.MapGet("/{id}", Results<Ok<Todo>, NotFound> (int id) =>
-    sampleTodos.FirstOrDefault(a => a.Id == id) is { } todo
-        ? TypedResults.Ok(todo)
-        : TypedResults.NotFound())
-    .WithName("GetTodoById");
+
+var cancelTaskApi = app.MapGroup("/api");
+
+cancelTaskApi.MapGet("/start", async (IMicrosoftService microsoftService, CancellationToken cancellationToken) =>
+{
+    try
+    {
+        await microsoftService.SumPageSizesAsync(cancellationToken);
+        return Results.Ok();
+    }
+    catch (OperationCanceledException)
+    {
+        // Return 499 (Client Closed Request) or just a 204 No Content
+        return Results.StatusCode(499);
+    }
+})
+.WithName("SumPageSizesAsync");
+
+
 
 app.Run();
 
-public record Todo(int Id, string? Title, DateOnly? DueBy = null, bool IsComplete = false);
 
-[JsonSerializable(typeof(Todo[]))]
+
+[JsonSerializable(typeof(string))]
 internal partial class AppJsonSerializerContext : JsonSerializerContext
 {
 
