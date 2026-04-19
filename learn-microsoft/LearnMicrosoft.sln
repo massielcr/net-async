@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsyncProcessTasksAsTheyComp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsyncFileAccess", "AsyncFileAccess\AsyncFileAccess.csproj", "{CAC24DCC-C379-4A31-8B44-426278734AAC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsyncCancelListOfTasks", "AsyncCancelListOfTasks\AsyncCancelListOfTasks.csproj", "{F7A47754-6528-4708-A941-FBEBEFE56700}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{CAC24DCC-C379-4A31-8B44-426278734AAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CAC24DCC-C379-4A31-8B44-426278734AAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CAC24DCC-C379-4A31-8B44-426278734AAC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F7A47754-6528-4708-A941-FBEBEFE56700}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7A47754-6528-4708-A941-FBEBEFE56700}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7A47754-6528-4708-A941-FBEBEFE56700}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7A47754-6528-4708-A941-FBEBEFE56700}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
