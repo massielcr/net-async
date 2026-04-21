@@ -1,10 +1,10 @@
 # net-api
 
-A comprehensive .NET API project repository built with C# containing multiple projects for learning and practical applications.
+A comprehensive .NET API project repository built with C# containing multiple projects for learning api and asynchronous programming implementations.
 
 ## 📋 Description
 
-A collection of .NET projects demonstrating API development, asynchronous programming, and financial data analysis using C#. This repository serves as both a learning resource and a production-ready API framework.
+A collection of .NET projects demonstrating API development and asynchronous programming using C#. This repository serves as a learning resource.
 
 ## 🚀 Getting Started
 
