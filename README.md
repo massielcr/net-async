@@ -66,222 +66,44 @@ dotnet run
 ```
 Available at: `http://localhost:5004`
 
-### Running All APIs (From Root)
+# Project Structure
 
-To build and prepare all projects:
-```bash
-dotnet build
-```
+This project is organized into several folders representing different components:
 
-Then navigate to each project directory and run individually, or use a task runner/script to start all services.
+## books-api
 
-### Running Tests
+- **BookCovers.API**  
+- **Books.API**  
+- **Books.Legacy**  
+- **Books.slnx**
 
-```bash
-dotnet test
-```
+## stock-analyzer
 
-Or test a specific project:
-```bash
-cd [project-name]
-dotnet test
-```
+- **StockAnalyzer.Core**  
+- **StockAnalyzer.Web**  
+- **StockAnalyzer.Windows**  
+- **StockAnalyzer.slnx**
 
-## 📦 Project Structure
+## stock-analyzer-task-runner
 
-```
-net-api/
-├── books-api/
-│   ├── Controllers/
-│   ├── Models/
-│   ├── Services/
-│   ├── Data/
-│   ├── appsettings.json
-│   ├── Program.cs
-│   ├── [project-name].csproj
-│   └── README.md
-│
-├── stock-analyzer/
-│   ├── Controllers/
-│   ├── Models/
-│   ├── Services/
-│   ├── Data/
-│   ├── appsettings.json
-│   ├── Program.cs
-│   ├── [project-name].csproj
-│   └── README.md
-│
-├── stock-analyzer-task-runner/
-│   ├── Services/
-│   ├── Jobs/
-│   ├── Models/
-│   ├── appsettings.json
-│   ├── Program.cs
-│   ├── [project-name].csproj
-│   └── README.md
-│
-├── learn-microsoft-async/
-│   ├── Examples/
-│   ├── Models/
-│   ├── Program.cs
-│   ├── [project-name].csproj
-│   └── README.md
-│
-├── .gitignore
-├── README.md
-└── [Configuration files]
-```
+- **StockAnalyzer.Core**  
+- **StockAnalyzer.Web**  
+- **StockAnalyzer.Windows**  
+- **StockAnalyzer.slnx**
 
-## 🎯 Projects Overview
+## learn-microsoft-async
 
-### 📚 books-api
-**Purpose:** RESTful API for book management
-
-**Port:** `5001`
-
-**Key Features:**
-- Full CRUD operations for books
-- Advanced search and filtering capabilities
-- Author and genre categorization
-- Book availability tracking
-
-**Technology Stack:**
-- ASP.NET Core
-- Entity Framework Core
-- SQL Server/SQLite
-
-**API Endpoints:**
-- `GET /api/books` - List all books
-- `GET /api/books/{id}` - Get book by ID
-- `POST /api/books` - Create new book
-- `PUT /api/books/{id}` - Update book
-- `DELETE /api/books/{id}` - Delete book
-- `GET /api/authors` - List authors
-- `GET /api/genres` - List genres
-
----
-
-### 📈 stock-analyzer
-**Purpose:** Financial data analysis and stock market insights
-
-**Port:** `5002`
-
-**Key Features:**
-- Real-time stock price tracking
-- Portfolio analysis and performance metrics
-- Multi-source data integration
-
-**Technology Stack:**
-- ASP.NET Core
-- Financial APIs integration
-- Data visualization
-
-**API Endpoints:**
-- `GET /api/stocks` - Get stock data
-- `GET /api/stocks/{symbol}` - Get specific stock
-- `GET /api/portfolio` - Get portfolio analysis
-- `GET /api/analysis/trends` - Get market trends
-- `POST /api/analysis` - Perform analysis
-
----
-
-### ⚙️ stock-analyzer-task-runner
-**Purpose:** Background service for automated stock analysis
-
-**Port:** `5003`
-
-**Key Features:**
-- Scheduled data collection and processing
-- Asynchronous background tasks
-- Job queue management
-- Real-time alerts and notifications
-- Error handling and retry logic
-
-**Technology Stack:**
-- .NET Worker Service / ASP.NET Core
-- Hangfire or Quartz.NET
-- Logging and monitoring
-
-**API Endpoints:**
-- `GET /api/tasks` - List running tasks
-- `GET /api/tasks/{id}` - Get task status
-- `POST /api/tasks` - Create new task
-- `GET /api/jobs/history` - View job history
-- `POST /api/jobs/trigger` - Manually trigger job
-
----
-
-### 🎓 learn-microsoft-async
-**Purpose:** Educational resource for async programming patterns
-
-**Port:** `5004`
-
-**Key Features:**
-- Practical async/await examples
-- Task parallelism demonstrations
-- Cancellation token usage
-- Exception handling in async contexts
-- Performance optimization techniques
-
-**Technology Stack:**
-- .NET Framework/Core
-- TPL (Task Parallel Library)
-- Example implementations
-
-**API Endpoints:**
-- `GET /api/examples` - List async examples
-- `GET /api/examples/{name}` - Get specific example
-- `POST /api/execute/{example}` - Execute example
-
----
-
-## 🔐 Configuration
-
-Each project has its own configuration:
-- `appsettings.json` - Default configuration
-- `appsettings.Development.json` - Development-specific settings
-- `appsettings.Production.json` - Production settings
-
-Update port numbers in `appsettings.json` if needed:
-```json
-{
-  "Kestrel": {
-    "Endpoints": {
-      "Http": {
-        "Url": "http://localhost:5001"
-      }
-    }
-  }
-}
-```
-
-## 🚀 Deployment
-
-### Individual Project Build
-```bash
-cd [project-name]
-dotnet publish -c Release -o ./publish
-```
-
-## 📊 Quick Reference - Running All Projects
-
-Start each in a separate terminal:
-
-```bash
-# Terminal 1 - Books API (Port 5001)
-cd books-api && dotnet run
-
-# Terminal 2 - Stock Analyzer (Port 5002)
-cd stock-analyzer && dotnet run
-
-# Terminal 3 - Stock Analyzer Task Runner (Port 5003)
-cd stock-analyzer-task-runner && dotnet run
-
-# Terminal 4 - Learn Microsoft Async (Port 5004)
-cd learn-microsoft-async && dotnet run
-```
-
-All APIs will be running simultaneously on their respective ports.
+- **AsyncCancelAfterPeriodOfTime**  
+- **AsyncCancelListOfTasks**  
+- **AsyncFileAccess**  
+- **AsyncGenerateAndConsumeStreams**  
+- **AsyncProcessTasksAsTheyComplete**  
+- **AsyncProgrammingScenarios**  
+- **AsyncReturnTypes**  
+- **Breakfast**  
+- **Breakfast.Tests**  
+- **DotnetFoundation**  
+- **LearnMicrosoft.sln**
 
 ## 👤 Author
 
