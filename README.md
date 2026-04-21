@@ -169,13 +169,10 @@ net-api/
 **Key Features:**
 - Real-time stock price tracking
 - Portfolio analysis and performance metrics
-- Market trend analysis and predictions
 - Multi-source data integration
-- Risk assessment tools
 
 **Technology Stack:**
 - ASP.NET Core
-- Machine Learning models (optional)
 - Financial APIs integration
 - Data visualization
 
@@ -203,7 +200,6 @@ net-api/
 **Technology Stack:**
 - .NET Worker Service / ASP.NET Core
 - Hangfire or Quartz.NET
-- Message queuing (RabbitMQ/Azure Service Bus)
 - Logging and monitoring
 
 **API Endpoints:**
@@ -259,26 +255,12 @@ Update port numbers in `appsettings.json` if needed:
 }
 ```
 
-## 📝 Contributing
-
-1. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-2. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-3. Push to the branch (`git push origin feature/AmazingFeature`)
-4. Open a Pull Request
-
 ## 🚀 Deployment
 
 ### Individual Project Build
 ```bash
 cd [project-name]
 dotnet publish -c Release -o ./publish
-```
-
-### Docker Support (if available)
-Each project may include a Dockerfile for containerization:
-```bash
-docker build -t [project-name] .
-docker run -p [external-port]:5000 [project-name]
 ```
 
 ## 📊 Quick Reference - Running All Projects
@@ -301,23 +283,18 @@ cd learn-microsoft-async && dotnet run
 
 All APIs will be running simultaneously on their respective ports.
 
-## 📝 License
-
-This project is open source and available under the MIT License.
-
 ## 👤 Author
 
 - **massielcr** - [@massielcr](https://github.com/massielcr)
 
 ## 🤝 Support
 
-For support, please open an issue in the repository or contact the maintainers.
+For support, please open an issue in the repository or contact the maintainer.
 
 ## 🙏 Acknowledgments
 
 - .NET Community
 - Microsoft Documentation
-- Contributors and users
 
 ---
 
