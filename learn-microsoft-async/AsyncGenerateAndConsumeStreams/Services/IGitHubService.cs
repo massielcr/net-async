@@ -4,6 +4,6 @@ namespace AsyncGenerateAndConsumeStreams.Services
 {
     internal interface IGitHubService
     {
-        Task<JArray> RunPagedQueryJObjectAsync(string repoName, CancellationToken cancel, IProgress<int> progress);
+        Task<JArray> RunPagedQueryBeforeRefactoringAsync(string repoName, CancellationToken cancel, IProgress<int> progress);
     }
 }

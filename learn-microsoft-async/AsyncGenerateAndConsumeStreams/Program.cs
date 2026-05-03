@@ -31,7 +31,7 @@ try
     IGitHubService gitHubService = host.Services.GetRequiredService<IGitHubService>();
 
     // make call
-    var results = await gitHubService.RunPagedQueryJObjectAsync("docs", cancellationSource.Token, progressReporter);
+    var results = await gitHubService.RunPagedQueryBeforeRefactoringAsync("docs", cancellationSource.Token, progressReporter);
 
     Console.WriteLine();
     Console.WriteLine(" Results: ");

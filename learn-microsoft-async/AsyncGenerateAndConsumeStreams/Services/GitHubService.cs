@@ -41,7 +41,7 @@ namespace AsyncGenerateAndConsumeStreams.Services
         }
 
 
-        public async Task<JArray> RunPagedQueryJObjectAsync(string repoName, CancellationToken cancel, IProgress<int> progress)
+        public async Task<JArray> RunPagedQueryBeforeRefactoringAsync(string repoName, CancellationToken cancel, IProgress<int> progress)
         {
             if (string.IsNullOrWhiteSpace(repoName))
             {
