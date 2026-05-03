@@ -1,6 +1,6 @@
-# net-api
+# net-async
 
-A comprehensive .NET API project repository built with C# containing multiple projects for learning api and asynchronous programming implementations.
+A comprehensive .NET project repository built with C# containing multiple projects for learning asynchronous programming implementations.
 
 ## 📋 Description
 
