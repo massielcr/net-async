@@ -69,7 +69,8 @@ namespace AsyncGenerateAndConsumeStreams.Services
                 var response = await _client.Connection.Post<string>(new Uri("https://api.github.com/graphql"),
                                                                             postBody, 
                                                                             "application/json", 
-                                                                            "application/json");
+                                                                            "application/json",
+                                                                            cancellationToken: cancel);
 
                 JObject results = JObject.Parse(response.HttpResponse.Body.ToString()!);
 
@@ -81,6 +82,7 @@ namespace AsyncGenerateAndConsumeStreams.Services
                 finalResults.Merge(issues(results)["nodes"]!);
 
                 progress?.Report(issuesReturned);
+
                 cancel.ThrowIfCancellationRequested();
             }
 
