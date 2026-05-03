@@ -19,7 +19,7 @@ A collection of .NET projects demonstrating API development and asynchronous pro
 1. Clone the repository:
 ```bash
 git clone https://github.com/massielcr/net-api.git
-cd net-api
+cd net-async
 ```
 
 2. Install dependencies:
