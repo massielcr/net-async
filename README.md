@@ -18,7 +18,7 @@ A collection of .NET projects demonstrating asynchronous programming using C#. T
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/massielcr/net-api.git
+git clone https://github.com/massielcr/net-async.git
 cd net-async
 ```
 
