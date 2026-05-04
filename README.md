@@ -4,7 +4,7 @@ A comprehensive .NET project repository built with C# containing multiple projec
 
 ## 📋 Description
 
-A collection of .NET projects demonstrating API development and asynchronous programming using C#. This repository serves as a learning resource.
+A collection of .NET projects demonstrating asynchronous programming using C#. This repository serves as a learning resource.
 
 ## 🚀 Getting Started
 
