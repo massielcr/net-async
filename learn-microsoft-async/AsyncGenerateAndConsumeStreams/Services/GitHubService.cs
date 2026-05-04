@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using Octokit;
+using System.Runtime.CompilerServices;
 
 namespace AsyncGenerateAndConsumeStreams.Services
 {
@@ -67,7 +68,7 @@ namespace AsyncGenerateAndConsumeStreams.Services
                 var postBody = issueAndPRQuery.ToJsonText();
 
                 var response = await _client.Connection.Post<string>(new Uri("https://api.github.com/graphql"),
-                                                                            postBody, 
+                                                                            postBody,
                                                                             "application/json", 
                                                                             "application/json",
                                                                             cancellationToken: cancel);
@@ -76,7 +77,6 @@ namespace AsyncGenerateAndConsumeStreams.Services
 
                 int totalCount = (int)issues(results)["totalCount"]!;
                 hasMorePages = (bool)pageInfo(results)["hasPreviousPage"]!;
-
                 issueAndPRQuery.Variables["start_cursor"] = pageInfo(results)["startCursor"]!.ToString();
                 issuesReturned += issues(results)["nodes"]!.Count();
                 finalResults.Merge(issues(results)["nodes"]!);
@@ -87,6 +87,51 @@ namespace AsyncGenerateAndConsumeStreams.Services
             }
 
             return finalResults;
+
+            JObject issues(JObject result) => (JObject)result["data"]!["repository"]!["issues"]!;
+            JObject pageInfo(JObject result) => (JObject)issues(result)["pageInfo"]!;
+        }
+
+
+
+        public async IAsyncEnumerable<JToken> RunPagedQueryAsync(string repoName, [EnumeratorCancellation] CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(repoName))
+            {
+                throw new ArgumentException("You must provide a repo name", nameof(repoName));
+            }
+
+            var issueAndPRQuery = new GraphQLRequest
+            {
+                Query = PagedIssueQuery
+            };
+
+            issueAndPRQuery.Variables["repo_name"] = repoName;
+
+            bool hasMorePages = true;
+            int pagesReturned = 0;
+            int issuesReturned = 0;
+
+            // Stop with 10 pages, because these are large repos:
+            while (hasMorePages && (pagesReturned++ < 10))
+            {
+                var postBody = issueAndPRQuery.ToJsonText();
+
+                var response = await _client.Connection.Post<string>(new Uri("https://api.github.com/graphql"),
+                                                                            postBody,
+                                                                            "application/json",
+                                                                            "application/json");
+
+                JObject results = JObject.Parse(response.HttpResponse.Body.ToString()!);
+
+                int totalCount = (int)issues(results)["totalCount"]!;
+                hasMorePages = (bool)pageInfo(results)["hasPreviousPage"]!;
+                issueAndPRQuery.Variables["start_cursor"] = pageInfo(results)["startCursor"]!.ToString();
+                issuesReturned += issues(results)["nodes"]!.Count();
+
+                foreach (JObject issue in issues(results)["nodes"]!)
+                    yield return issue;
+            }
 
             JObject issues(JObject result) => (JObject)result["data"]!["repository"]!["issues"]!;
             JObject pageInfo(JObject result) => (JObject)issues(result)["pageInfo"]!;

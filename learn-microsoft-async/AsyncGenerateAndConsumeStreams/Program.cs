@@ -13,44 +13,53 @@ builder.Services.AddSingleton<IGitHubService, GitHubService>();
 // 3. Build the host
 using IHost host = builder.Build();
 
-
-
+// 4. Resolve the service
+IGitHubService gitHubService = host.Services.GetRequiredService<IGitHubService>();
 
 
 CancellationTokenSource cancellationSource = new();
 
-IProgress<int> progressReporter = new Progress<int>((num) =>
+#region Before Refactoring
+
+//IProgress<int> progressReporter = new Progress<int>((num) =>
+//{
+//    Console.WriteLine($"Received {num} issues in total");
+//});
+
+//try
+//{
+//    var results = await gitHubService.RunPagedQueryBeforeRefactoringAsync("docs", cancellationSource.Token, progressReporter);
+
+//    Console.WriteLine();
+//    Console.WriteLine(" Results: ");
+//    Console.WriteLine();
+
+//    foreach (var issue in results)
+//        Console.WriteLine(issue);
+//}
+//catch (OperationCanceledException)
+//{
+//    Console.WriteLine("Work has been cancelled");
+//}
+//catch (Exception ex)
+//{
+//    Console.WriteLine(ex.Message);
+//}
+
+#endregion
+
+
+#region Using async streams
+
+int num = 0;
+await foreach (var issue in gitHubService.RunPagedQueryAsync("docs")
+    .WithCancellation(cancellationSource.Token))
 {
-    Console.WriteLine($"Received {num} issues in total");
-});
-
-
-try
-{
-    // init service
-    IGitHubService gitHubService = host.Services.GetRequiredService<IGitHubService>();
-
-    // make call
-    var results = await gitHubService.RunPagedQueryBeforeRefactoringAsync("docs", cancellationSource.Token, progressReporter);
-
-    Console.WriteLine();
-    Console.WriteLine(" Results: ");
-    Console.WriteLine();
-
-    foreach (var issue in results)
-        Console.WriteLine(issue);
-
+    Console.WriteLine(issue);
+    Console.WriteLine($"Received {++num} issues in total");
 }
-catch (OperationCanceledException)
-{
-    Console.WriteLine("Work has been cancelled");
-}
-catch (Exception ex)
-{
-    Console.WriteLine(ex.Message);
-}
 
-
+#endregion
 
 
 Console.ReadLine();
