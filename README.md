@@ -14,58 +14,6 @@ A collection of .NET projects demonstrating asynchronous programming using C#. T
 - Visual Studio or Visual Studio Code
 - Git
 
-### Installation
-
-1. Clone the repository:
-```bash
-git clone https://github.com/massielcr/net-async.git
-cd net-async
-```
-
-2. Install dependencies:
-```bash
-dotnet restore
-```
-
-3. Build all projects:
-```bash
-dotnet build
-```
-
-## 🔧 Development
-
-### Running Individual APIs
-
-Each project contains its own API and runs independently on different ports:
-
-#### Books API
-```bash
-cd books-api
-dotnet run
-```
-Available at: `http://localhost:5001`
-
-#### Stock Analyzer API
-```bash
-cd stock-analyzer
-dotnet run
-```
-Available at: `http://localhost:5002`
-
-#### Stock Analyzer Task Runner
-```bash
-cd stock-analyzer-task-runner
-dotnet run
-```
-Available at: `http://localhost:5003`
-
-#### Learn Microsoft Async
-```bash
-cd learn-microsoft-async
-dotnet run
-```
-Available at: `http://localhost:5004`
-
 # Project Structure
 
 This project is organized into several folders representing different components:
@@ -104,20 +52,5 @@ This project is organized into several folders representing different components
 - **Breakfast.Tests**  
 - **DotnetFoundation**  
 - **LearnMicrosoft.sln**
-
-## 👤 Author
-
-- **massielcr** - [@massielcr](https://github.com/massielcr)
-
-## 🤝 Support
-
-For support, please open an issue in the repository or contact the maintainer.
-
-## 🙏 Acknowledgments
-
-- .NET Community
-- Microsoft Documentation
-
----
 
 **Last Updated:** April 21, 2026
