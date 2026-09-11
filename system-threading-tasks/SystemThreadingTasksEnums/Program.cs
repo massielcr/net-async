@@ -4,6 +4,13 @@ class Program
 {
     static async Task Main()
     {
+        await RunConfigureAwaitOptions();
+
+        Console.ReadLine();
+    }
+
+    static async Task RunConfigureAwaitOptions()
+    {
         Console.WriteLine("No Options:");
         await EnumConfigureAwaitOptions.Method1();
         Console.WriteLine();
@@ -39,8 +46,6 @@ class Program
         Console.WriteLine("Options: ForceYielding - Exception");
         await EnumConfigureAwaitOptions.Method1Exception(ConfigureAwaitOptions.ForceYielding);
         Console.WriteLine();
-
-        Console.ReadLine();
     }
 }
 
