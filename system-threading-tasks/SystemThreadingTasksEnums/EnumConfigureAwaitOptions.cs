@@ -73,6 +73,7 @@
         {
             int threadId = Environment.CurrentManagedThreadId;
 
+            await Task.Delay(500);
             Logger.Log($"Started. - Current Thread ID: {threadId}");
 
             throw new Exception("Errorrrrr");
