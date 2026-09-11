@@ -2,6 +2,46 @@
 {
     internal static class EnumConfigureAwaitOptions
     {
+        internal static async Task Run()
+        {
+            Console.WriteLine("No Options:");
+            await Method1();
+            Console.WriteLine();
+
+            Console.WriteLine("Options: None");
+            await Method1(ConfigureAwaitOptions.None);
+            Console.WriteLine();
+
+            Console.WriteLine("Options: ContinueOnCapturedContext - Exception");
+            await Method1(ConfigureAwaitOptions.ContinueOnCapturedContext);
+            Console.WriteLine();
+
+            Console.WriteLine("Options: SuppressThrowing");
+            await Method1(ConfigureAwaitOptions.SuppressThrowing);
+            Console.WriteLine();
+
+            Console.WriteLine("Options: ForceYielding");
+            await Method1(ConfigureAwaitOptions.ForceYielding);
+            Console.WriteLine();
+
+            Console.WriteLine("Options: None - Exception");
+            await Method1Exception(ConfigureAwaitOptions.None);
+            Console.WriteLine();
+
+            Console.WriteLine("Options: ContinueOnCapturedContext - Exception");
+            await Method1Exception(ConfigureAwaitOptions.ContinueOnCapturedContext);
+            Console.WriteLine();
+
+            Console.WriteLine("Options: SuppressThrowing - Exception");
+            await Method1Exception(ConfigureAwaitOptions.SuppressThrowing);
+            Console.WriteLine();
+
+            Console.WriteLine("Options: ForceYielding - Exception");
+            await Method1Exception(ConfigureAwaitOptions.ForceYielding);
+            Console.WriteLine();
+        }
+
+
         internal static async Task Method1()
         {
             int threadId = Environment.CurrentManagedThreadId;
