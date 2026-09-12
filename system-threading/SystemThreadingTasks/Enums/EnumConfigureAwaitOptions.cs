@@ -1,4 +1,6 @@
-﻿namespace SystemThreadingTasksEnums
+﻿using SystemThreadingTasksEnums;
+
+namespace SystemThreadingTasks.Enums
 {
     internal static class EnumConfigureAwaitOptions
     {
@@ -39,6 +41,14 @@
             Console.WriteLine("Options: ForceYielding - Exception");
             await Method1Exception(ConfigureAwaitOptions.ForceYielding);
             Console.WriteLine();
+
+            Console.WriteLine("ConfigureAwait True");
+            await Method1(true);
+            Console.WriteLine();
+
+            Console.WriteLine("ConfigureAwait False");
+            await Method1(false);
+            Console.WriteLine();
         }
 
 
@@ -56,6 +66,24 @@
             {
                 Logger.Log($"Exception. - Current Thread ID: {threadId}");
             }            
+
+            Logger.Log($"Completed. - Current Thread ID: {threadId}");
+        }
+
+        internal static async Task Method1(bool awaiter)
+        {
+            int threadId = Environment.CurrentManagedThreadId;
+
+            Logger.Log($"Started. - Current Thread ID: {threadId}");
+
+            try
+            {
+                await Method2().ConfigureAwait(awaiter);
+            }
+            catch (Exception ex)
+            {
+                Logger.Log($"Exception. - Current Thread ID: {threadId}");
+            }
 
             Logger.Log($"Completed. - Current Thread ID: {threadId}");
         }

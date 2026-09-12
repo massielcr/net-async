@@ -1,4 +1,4 @@
-﻿namespace SystemThreadingTasksEnums
+﻿namespace SystemThreadingTasks.Enums
 {
     internal static class EnumTaskStatus
     {        
@@ -45,8 +45,7 @@
                 Console.WriteLine("{0,10} {1,20} {2,14:N0}", "Task Id", "Status", "Iterations");
                 foreach (var t in tasks)
                     Console.WriteLine("{0,10} {1,20} {2,14}",
-                                      t.Id, t.Status,
-                                      t.Status == TaskStatus.RanToCompletion ? t.Result.ToString("N0") : "n/a");
+                                      t.Id, t.Status, t.Status == TaskStatus.RanToCompletion ? t.Result.ToString("N0") : "n/a");
             }
         }
     }
