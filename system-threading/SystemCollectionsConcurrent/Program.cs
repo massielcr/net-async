@@ -15,6 +15,7 @@ class Program
             Console.WriteLine("[6] - ConcurrentQueue - Deadlock (Fixed)");
             Console.WriteLine("[7] - ConcurrentQueue - Resource Dependency Livelock");
             Console.WriteLine("[8] - ConcurrentQueue - Resource Dependency Livelock (Fixed)");
+            Console.WriteLine("[9] - ConcurrentBag");
 
             string? key = Console.ReadLine();
 
@@ -51,6 +52,10 @@ class Program
                 case "8":
                     Console.WriteLine("CONCURRENTQUEUE - Resource Dependency Livelock (Fixed):");
                     await DSConcurrentQueue.RunResourceDependencyLivelock(50, false);
+                    goto default;
+                case "9":
+                    Console.WriteLine("CONCURRENTBAG");
+                    await DSConcurrentBag.Run(50);
                     goto default;
                 default:
                     Console.WriteLine();
