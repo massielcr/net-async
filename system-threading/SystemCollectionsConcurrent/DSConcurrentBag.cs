@@ -14,13 +14,16 @@ namespace SystemCollectionsConcurrent
             for (int i = 0; i < itemsCount; i++)
             {
                 var numberToAdd = i;
-                bagAddTasks.Add(Task.Run(() => cb.Add(numberToAdd)));
+                bagAddTasks.Add(Task.Run(() => 
+                {
+                    cb.Add(numberToAdd);
 
-                Console.WriteLine($"Added {numberToAdd} item into the bag");
+                    Console.WriteLine($"[Producer] Added {numberToAdd} item into the bag");
+                }));
             }
 
             // Wait for all tasks to complete
-            Task.WaitAll(bagAddTasks.ToArray());
+            await Task.WhenAll(bagAddTasks);
 
             Console.WriteLine($"3. Consume the items in the bag while the bag is not empty by {itemsCount} workers, 1 task per item");
             List<Task> bagConsumeTasks = [];
@@ -35,11 +38,11 @@ namespace SystemCollectionsConcurrent
                     if (cb.TryTake(out item))
                     {                        
                         Interlocked.Increment(ref itemsInBag);
-                        Console.WriteLine($"[Worker] Thread {threadId:2} | Took {item} - itemsInBag: {itemsInBag}");
+                        Console.WriteLine($"[Consumer] Thread {threadId} | Took {item} - itemsInBag: {Volatile.Read(ref itemsInBag)}");
                     }
                 }));
             }
-            Task.WaitAll(bagConsumeTasks.ToArray());
+            await Task.WhenAll(bagConsumeTasks);
 
             Console.WriteLine($"There were {itemsInBag} items in the bag");
 

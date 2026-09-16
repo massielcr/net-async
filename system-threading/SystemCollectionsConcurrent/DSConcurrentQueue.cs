@@ -52,7 +52,7 @@ namespace SystemCollectionsConcurrent
             {
                 int threadId = Environment.CurrentManagedThreadId;
 
-                Console.WriteLine($"[Worker {Task.CurrentId}] Thread {threadId:2} started");
+                Console.WriteLine($"[Worker {Task.CurrentId}] Thread {threadId} started");
 
                 int localSum = 0;
                 int localValue;
@@ -62,7 +62,7 @@ namespace SystemCollectionsConcurrent
                 }
                 int exactSumAfterMe =  Interlocked.Add(ref outerSum, localSum);
 
-                Console.WriteLine($"[Worker {Task.CurrentId}] Thread {threadId:2} finished | exactSumAfterMe:{exactSumAfterMe}");
+                Console.WriteLine($"[Worker {Task.CurrentId}] Thread {threadId} finished | exactSumAfterMe:{exactSumAfterMe}");
             };
 
             // Start 4 concurrent consuming actions.
@@ -88,7 +88,7 @@ namespace SystemCollectionsConcurrent
                 {
                     // DEADLOCK STEP 1: The producer refuses to enqueue the next item 
                     // until the consumer signals that it is ready.
-                    Console.WriteLine($"[Producer Worker] Thread {threadId:2} | producerHasEnqueuedAnItem: {producerHasEnqueuedAnItem} consumerIsReadyForNextItem: {consumerIsReadyForNextItem}");
+                    Console.WriteLine($"[Producer Worker] Thread {threadId} | producerHasEnqueuedAnItem: {producerHasEnqueuedAnItem} consumerIsReadyForNextItem: {consumerIsReadyForNextItem}");
 
                     while (Volatile.Read(ref consumerIsReadyForNextItem) == 0)
                     {
@@ -99,7 +99,7 @@ namespace SystemCollectionsConcurrent
 
 
                     queue.Enqueue(i);
-                    Console.WriteLine($"[Producer Worker] Thread {threadId:2} | Produce: {i}");
+                    Console.WriteLine($"[Producer Worker] Thread {threadId} | Produce: {i}");
 
                     // Signal to the consumer that an item is ready
                     Interlocked.Exchange(ref producerHasEnqueuedAnItem, 1);
@@ -117,7 +117,7 @@ namespace SystemCollectionsConcurrent
                 {
                     // DEADLOCK STEP 2: The consumer refuses to process anything 
                     // until the producer signals that an item has been enqueued.
-                    Console.WriteLine($"[Consumer Worker] Thread {threadId:2} | producerHasEnqueuedAnItem: {producerHasEnqueuedAnItem} consumerIsReadyForNextItem: {consumerIsReadyForNextItem}");
+                    Console.WriteLine($"[Consumer Worker] Thread {threadId} | producerHasEnqueuedAnItem: {producerHasEnqueuedAnItem} consumerIsReadyForNextItem: {consumerIsReadyForNextItem}");
 
                     while (Volatile.Read(ref producerHasEnqueuedAnItem) == 0)
                     {
@@ -128,7 +128,7 @@ namespace SystemCollectionsConcurrent
 
                     if (queue.TryDequeue(out int result))
                     {
-                        Console.WriteLine($"[Consumer Worker] Thread {threadId:2}  | Consumed: {result}");
+                        Console.WriteLine($"[Consumer Worker] Thread {threadId}  | Consumed: {result}");
                     }
 
                     // Signal back to the producer that it can send the next item
@@ -141,7 +141,7 @@ namespace SystemCollectionsConcurrent
                     // and we won't have any consumer task even if the poducer queues another item
                     for (int c = 0; c < itemsCount; c++)
                     {
-                        Console.WriteLine($"[Consumer Worker] Thread {threadId:2} | producerHasEnqueuedAnItem: {producerHasEnqueuedAnItem} consumerIsReadyForNextItem: {consumerIsReadyForNextItem}");
+                        Console.WriteLine($"[Consumer Worker] Thread {threadId} | producerHasEnqueuedAnItem: {producerHasEnqueuedAnItem} consumerIsReadyForNextItem: {consumerIsReadyForNextItem}");
 
                         while (Volatile.Read(ref producerHasEnqueuedAnItem) == 0)
                         {
@@ -152,7 +152,7 @@ namespace SystemCollectionsConcurrent
 
                         if (queue.TryDequeue(out int result))
                         {
-                            Console.WriteLine($"[Consumer Worker] Thread {threadId:2}  | Consumed: {result}");
+                            Console.WriteLine($"[Consumer Worker] Thread {threadId}  | Consumed: {result}");
                         }
 
                         // Signal back to the producer that it can send the next item
@@ -178,13 +178,13 @@ namespace SystemCollectionsConcurrent
             {
                 int threadId = Environment.CurrentManagedThreadId;
 
-                Console.WriteLine($"[Worker 1] Thread {threadId:2}  | Try dequeue queueA");
+                Console.WriteLine($"[Worker 1] Thread {threadId}  | Try dequeue queueA");
 
                 string? result;
                 // Loop runs as long as there is work in Queue A
                 while (queueA.TryDequeue(out result))
                 {
-                    Console.WriteLine($"[Worker 1] Thread {threadId:2}  | Dequeued {result} from queueA - Check queueB");
+                    Console.WriteLine($"[Worker 1] Thread {threadId}  | Dequeued {result} from queueA - Check queueB");
 
                     // LIVELOCK CONDITION: Worker 1 refuses to proceed until 
                     // Queue B is completely empty.
@@ -212,13 +212,13 @@ namespace SystemCollectionsConcurrent
             {
                 int threadId = Environment.CurrentManagedThreadId;
 
-                Console.WriteLine($"[Worker 2] Thread {threadId:2}  | Try dequeue queueB");
+                Console.WriteLine($"[Worker 2] Thread {threadId}  | Try dequeue queueB");
 
                 string? result;
                 // Loop runs as long as there is work in Queue B
                 while (queueB.TryDequeue(out result))
                 {
-                    Console.WriteLine($"[Worker 2] Thread {threadId:2}  | Dequeued {result} from queueB -  Check queueA");
+                    Console.WriteLine($"[Worker 2] Thread {threadId}  | Dequeued {result} from queueB -  Check queueA");
 
                     // LIVELOCK CONDITION: Worker 2 refuses to proceed until 
                     // Queue A is completely empty.
