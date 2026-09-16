@@ -31,7 +31,7 @@ class Program
                     goto default;
                 case "3":
                     Console.WriteLine("CONCURRENTSTACK - Deadlock:");
-                    await DSConcurrentStack.RunDeadlock(900, 5);
+                    await DSConcurrentStack.RunDiningPhilosophersDeadlock(900, 5);
                     goto default;
                 case "4":
                     Console.WriteLine("CONCURRENTQUEUE:");
