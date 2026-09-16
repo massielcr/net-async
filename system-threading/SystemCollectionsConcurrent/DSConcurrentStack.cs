@@ -219,7 +219,7 @@ namespace SystemCollectionsConcurrent
             }
         }
 
-        internal static async Task RunDeadLlock(int itemsCount, int workersCount)
+        internal static async Task RunDeadlock(int itemsCount, int workersCount)
         {
             Console.WriteLine($"1. Create empty ConcurrentStack<int> instance");
 
