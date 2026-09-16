@@ -15,8 +15,6 @@ namespace SystemCollectionsConcurrent
 
             ConcurrentStack<int> stack = new();
 
-            Console.WriteLine();
-
 
             Console.WriteLine($"2. TryPeek() empty ConcurrentStack<int> instance");
 
@@ -28,8 +26,6 @@ namespace SystemCollectionsConcurrent
             {
                 Console.WriteLine("Could not peek most recently added number.");
             }
-
-            Console.WriteLine();
 
 
             Console.WriteLine($"3. Populate ConcurrentStack<int> with {itemsCount} items sync");
@@ -46,9 +42,6 @@ namespace SystemCollectionsConcurrent
             // Run the action once
             pusher();
 
-            Console.WriteLine();
-
-
             Console.WriteLine($"4. TryPeek() not empty ConcurrentStack<int> instance");
 
             if (stack.TryPeek(out int result))
@@ -60,15 +53,9 @@ namespace SystemCollectionsConcurrent
                 Console.WriteLine("Could not peek most recently added number.");
             }
 
-            Console.WriteLine();
-
-
             Console.WriteLine($"5. Clear not empty ConcurrentStack<int> instance");
             // Empty the stack
             stack.Clear();
-
-            Console.WriteLine();
-
 
             Console.WriteLine($"6. Check if ConcurrentStack<int> instance is empty");
 
@@ -77,17 +64,14 @@ namespace SystemCollectionsConcurrent
                 Console.WriteLine("Cleared the stack.");
             }
 
-            Console.WriteLine();
-
-
-            Console.WriteLine($"7. Push and Pop by {workersCount} workers");
+            Console.WriteLine($"7. Create {workersCount} Push and Pop workers");
 
             // Create an action to push and pop items
             Action pushAndPop = () =>
             {
                 int threadId = Environment.CurrentManagedThreadId;
 
-                Console.WriteLine($"Task started on Task.CurrentId: {Task.CurrentId} by Thread: {threadId} | Stack Count: {stack.Count}");
+                Console.WriteLine($"Task started on Task.CurrentId: {Task.CurrentId} by Thread: {threadId:2} | Stack Count: {stack.Count}");
 
                 int successfulPops = 0;
                 int failedPops = 0;
@@ -110,7 +94,7 @@ namespace SystemCollectionsConcurrent
                     }
                 }                    
 
-                Console.WriteLine($"Task ended on Task.CurrentId: {Task.CurrentId} by Thread: {threadId}  | Stack Count: {stack.Count} | Successful Pops: {successfulPops} | Failed (Dry) Pops: {failedPops}");
+                Console.WriteLine($"Task ended on Task.CurrentId: {Task.CurrentId} by Thread: {threadId:2}  | Stack Count: {stack.Count} | Successful Pops: {successfulPops} | Failed (Dry) Pops: {failedPops}");
             };
 
             // Spin up five concurrent tasks of the action
@@ -119,16 +103,12 @@ namespace SystemCollectionsConcurrent
             {
                 tasks[i] = Task.Factory.StartNew(pushAndPop);                
             }
-                
 
+            Console.WriteLine($"8.  Wait for all the tasks to finish up");
 
-            // Wait for all the tasks to finish up
             await Task.WhenAll(tasks);
 
-            Console.WriteLine();
-
-
-            Console.WriteLine($"8. Check if took all items from ConcurrentStack<int> instance");
+            Console.WriteLine($"9. Check if took all items from ConcurrentStack<int> instance");
 
             if (!stack.IsEmpty)
             {
@@ -138,8 +118,6 @@ namespace SystemCollectionsConcurrent
             {
                 Console.WriteLine("It took all the items off the stack");
             }
-
-            Console.WriteLine();
         }
 
         internal static async Task RunRange(int itemsCount, int workersCount)
@@ -149,7 +127,7 @@ namespace SystemCollectionsConcurrent
             ConcurrentStack<int> stack = new();
 
 
-            Console.WriteLine($"2. Push a range of values onto the ConcurrentStack<int> instance concurrently");
+            Console.WriteLine($"2. Push a range of values onto the ConcurrentStack<int> instance concurrently by {workersCount} workers");
 
             await Task.WhenAll(Enumerable.Range(0, workersCount).Select(i => Task.Factory.StartNew(
                 (state) =>
@@ -158,7 +136,7 @@ namespace SystemCollectionsConcurrent
 
                     int index = (int)state!;
 
-                    Console.WriteLine($"[Worker {Task.CurrentId}] Thread {threadId} | State: {index}");
+                    Console.WriteLine($"[Worker {Task.CurrentId}] Thread {threadId:2} | State: {index}");
                     
                     int[] array = new int[itemsCount];
                     for (int j = 0; j < itemsCount; j++)
@@ -166,7 +144,7 @@ namespace SystemCollectionsConcurrent
                         array[j] = index + j;
                     }
 
-                    Console.WriteLine($"[Worker {Task.CurrentId}] Thread {threadId} | Pushing an array of ints from {array[0]} to {array[itemsCount - 1]}");
+                    Console.WriteLine($"[Worker {Task.CurrentId}] Thread {threadId:2} | Pushing an array of ints from {array[0]} to {array[itemsCount - 1]}");
 
                     stack.PushRange(array);
 
@@ -174,7 +152,7 @@ namespace SystemCollectionsConcurrent
             ).ToArray());
 
 
-            Console.WriteLine($"3. Try Pop a range of values from the ConcurrentStack<int> instance concurrently");
+            Console.WriteLine($"3. Try Pop a range of values from the ConcurrentStack<int> instance concurrently by {workersCount} workers");
 
             int numTotalElements = workersCount * itemsCount;
             int[] resultBuffer = new int[numTotalElements];
@@ -186,11 +164,11 @@ namespace SystemCollectionsConcurrent
 
                     int index = (int)obj!;
 
-                    Console.WriteLine($"[Worker {Task.CurrentId}] Thread {threadId} | State: {index}");
+                    Console.WriteLine($"[Worker {Task.CurrentId}] Thread {threadId:2} | State: {index}");
 
                     int result = stack.TryPopRange(resultBuffer, index, itemsCount);
 
-                    Console.WriteLine($"[Worker {Task.CurrentId}] Thread {threadId} | TryPopRange expected {itemsCount}, got {result}.");
+                    Console.WriteLine($"[Worker {Task.CurrentId}] Thread {threadId:2} | TryPopRange expected {itemsCount}, got {result}.");
 
                 }, i * itemsCount, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default)
             ).ToArray());
@@ -231,16 +209,16 @@ namespace SystemCollectionsConcurrent
             {
                 int threadId = Environment.CurrentManagedThreadId;
 
-                Console.WriteLine($"[Worker 1] Thread {threadId} attempting to lock Resource A...");
+                Console.WriteLine($"[Worker 1] Thread {threadId:2} attempting to lock Resource A...");
 
                 lock (LockA)
                 {
-                    Console.WriteLine($"[Worker 1] Thread {threadId} successfully locked Resource A.");
+                    Console.WriteLine($"[Worker 1] Thread {threadId:2} successfully locked Resource A.");
 
                     // Tiny pause to ensure Worker 2 grabs Lock B in parallel
                     Thread.Sleep(50);
 
-                    Console.WriteLine($"[Worker 1] Thread {threadId} attempting to lock Resource B...");
+                    Console.WriteLine($"[Worker 1] Thread {threadId:2} attempting to lock Resource B...");
                     lock (LockB)
                     {
                         // This code will never be reached
@@ -256,16 +234,16 @@ namespace SystemCollectionsConcurrent
             {
                 int threadId = Environment.CurrentManagedThreadId;
 
-                Console.WriteLine($"[Worker 2] Thread {threadId} attempting to lock Resource B...");
+                Console.WriteLine($"[Worker 2] Thread {threadId:2} attempting to lock Resource B...");
 
                 lock (LockB)
                 {
-                    Console.WriteLine($"[Worker 2] Thread {threadId} successfully locked Resource B.");
+                    Console.WriteLine($"[Worker 2] Thread {threadId:2} successfully locked Resource B.");
 
                     // Tiny pause to ensure Worker 1 grabs Lock A in parallel
                     Thread.Sleep(50);
 
-                    Console.WriteLine($"[Worker 2] Thread {threadId} attempting to lock Resource A...");
+                    Console.WriteLine($"[Worker 2] Thread {threadId:2} attempting to lock Resource A...");
                     lock (LockA)
                     {
                         // This code will never be reached
@@ -276,7 +254,7 @@ namespace SystemCollectionsConcurrent
                 }
             };
 
-            Console.WriteLine($"4. Run both workers in parallel");
+            Console.WriteLine($"4. Run both workers in parallel. Worker 1 push {itemsCount} items and Worker 2 pop {itemsCount} items");
 
             var tasks = new Task[2];
             tasks[0] = Task.Run(worker1);

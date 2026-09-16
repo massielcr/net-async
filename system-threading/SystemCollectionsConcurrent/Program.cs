@@ -13,6 +13,8 @@ class Program
             Console.WriteLine("[4] - ConcurrentQueue");
             Console.WriteLine("[5] - ConcurrentQueue - Deadlock");
             Console.WriteLine("[6] - ConcurrentQueue - Deadlock (Fixed)");
+            Console.WriteLine("[7] - ConcurrentQueue - Resource Dependency Livelock");
+            Console.WriteLine("[8] - ConcurrentQueue - Resource Dependency Livelock (Fixed)");
 
             string? key = Console.ReadLine();
 
@@ -36,11 +38,19 @@ class Program
                     goto default;
                 case "5":
                     Console.WriteLine("CONCURRENTQUEUE - Deadlock:");
-                    await DSConcurrentQueue.RunProducerConsumerDeadlock(100);
+                    await DSConcurrentQueue.RunProducerConsumerDeadlock(50);
                     goto default;
                 case "6":
                     Console.WriteLine("CONCURRENTQUEUE - Deadlock (Fixed):");
-                    await DSConcurrentQueue.RunProducerConsumerDeadlock(100, false);
+                    await DSConcurrentQueue.RunProducerConsumerDeadlock(50, false);
+                    goto default;
+                case "7":
+                    Console.WriteLine("CONCURRENTQUEUE - Resource Dependency Livelock:");
+                    await DSConcurrentQueue.RunResourceDependencyLivelock(50);
+                    goto default;
+                case "8":
+                    Console.WriteLine("CONCURRENTQUEUE - Resource Dependency Livelock (Fixed):");
+                    await DSConcurrentQueue.RunResourceDependencyLivelock(50, false);
                     goto default;
                 default:
                     Console.WriteLine();
