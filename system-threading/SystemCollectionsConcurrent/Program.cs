@@ -7,15 +7,16 @@ class Program
         while (true)
         {
             Console.WriteLine("OPTIONS:");
-            Console.WriteLine("[1] - ConcurrentStack");
-            Console.WriteLine("[2] - ConcurrentStack - Range");
-            Console.WriteLine("[3] - ConcurrentStack - Deadlock");
-            Console.WriteLine("[4] - ConcurrentQueue");
-            Console.WriteLine("[5] - ConcurrentQueue - Deadlock");
-            Console.WriteLine("[6] - ConcurrentQueue - Deadlock (Fixed)");
-            Console.WriteLine("[7] - ConcurrentQueue - Resource Dependency Livelock");
-            Console.WriteLine("[8] - ConcurrentQueue - Resource Dependency Livelock (Fixed)");
-            Console.WriteLine("[9] - ConcurrentBag");
+            Console.WriteLine("[1]  - ConcurrentStack");
+            Console.WriteLine("[2]  - ConcurrentStack - Range");
+            Console.WriteLine("[3]  - ConcurrentStack - Deadlock");
+            Console.WriteLine("[4]  - ConcurrentQueue");
+            Console.WriteLine("[5]  - ConcurrentQueue - Deadlock");
+            Console.WriteLine("[6]  - ConcurrentQueue - Deadlock (Fixed)");
+            Console.WriteLine("[7]  - ConcurrentQueue - Resource Dependency Livelock");
+            Console.WriteLine("[8]  - ConcurrentQueue - Resource Dependency Livelock (Fixed)");
+            Console.WriteLine("[9]  - ConcurrentBag");
+            Console.WriteLine("[10] - IProducerConsumerCollection<T>");
 
             string? key = Console.ReadLine();
 
@@ -56,6 +57,10 @@ class Program
                 case "9":
                     Console.WriteLine("CONCURRENTBAG");
                     await DSConcurrentBag.Run(50);
+                    goto default;
+                case "10":
+                    Console.WriteLine("IPRODUCERCONSUMERCOLLECTION<T>");
+                    await DSProducerConsumerCollection.Run();
                     goto default;
                 default:
                     Console.WriteLine();
