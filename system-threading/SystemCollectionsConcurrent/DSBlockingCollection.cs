@@ -4,10 +4,10 @@ namespace SystemCollectionsConcurrent
 {
     internal static class DSBlockingCollection
     {
-        public static async Task RunTake(int itemCounts)
+        public static async Task RunTake(int itemCounts, int upperbound)
         {
-            Console.WriteLine($"1. Create a BlockingCollection<int> instance");
-            using (BlockingCollection<int> bc = new())
+            Console.WriteLine($"1. Create a BlockingCollection<int> instance with upperboud {upperbound}");
+            using (BlockingCollection<int> bc = new(upperbound))
             {
                 Console.WriteLine($"2. Added task to produce {itemCounts} items into the BlockingCollection<int> instance and send CompleteAdding() signal");
 
@@ -25,7 +25,7 @@ namespace SystemCollectionsConcurrent
                     Console.WriteLine($"[Producer Worker {Task.CurrentId}] Thread {threadId} | Send CompleteAdding() signal");
                 });
 
-                Console.WriteLine($"3. Added Task to Consume {itemCounts} items from the BlockingCollection<int> instance after receiving the CompleteAdding() signal");
+                Console.WriteLine($"3. Added Task to Consume {itemCounts} items from the BlockingCollection<int> instance");
 
                 Task consumer = Task.Run(() =>
                 {
@@ -33,7 +33,7 @@ namespace SystemCollectionsConcurrent
 
                     try
                     {
-                        // Consume the BlockingCollection
+                        // Consume the BlockingCollection - bc.Take() relies on CompleteAdding() to know how to behave when the collection is empty
                         while (true) Console.WriteLine($"[Consumer worker {Task.CurrentId}] Thread {threadId} | Consumed {bc.Take()}");
                     }
                     catch (InvalidOperationException)

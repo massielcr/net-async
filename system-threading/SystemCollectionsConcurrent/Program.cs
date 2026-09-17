@@ -65,7 +65,9 @@ class Program
                     goto default;
                 case "11":
                     Console.WriteLine("BLOCKINGCOLLECTION");
-                    await DSBlockingCollection.RunTake(100);
+                    await DSBlockingCollection.RunTake(50, 30);
+                    await DSBlockingCollection.RunTake(50, 50);
+                    await DSBlockingCollection.RunTake(50, 60);
                     goto default;
                 default:
                     Console.WriteLine();
