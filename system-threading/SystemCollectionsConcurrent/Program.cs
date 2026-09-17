@@ -17,7 +17,8 @@ class Program
             Console.WriteLine("[8]  - ConcurrentQueue - Resource Dependency Livelock (Fixed)");
             Console.WriteLine("[9]  - ConcurrentBag");
             Console.WriteLine("[10] - IProducerConsumerCollection<T>");
-            Console.WriteLine("[11] - BlockingCollection");
+            Console.WriteLine("[11] - BlockingCollection - Take");
+            Console.WriteLine("[12] - BlockingCollection - TryTake");
 
             string? key = Console.ReadLine();
 
@@ -64,10 +65,16 @@ class Program
                     await DSProducerConsumerCollection.Run();
                     goto default;
                 case "11":
-                    Console.WriteLine("BLOCKINGCOLLECTION");
-                    await DSBlockingCollection.RunTake(50, 30);
+                    Console.WriteLine("BLOCKINGCOLLECTION - Take");
+                    await DSBlockingCollection.RunTake(50, 5);
                     await DSBlockingCollection.RunTake(50, 50);
                     await DSBlockingCollection.RunTake(50, 60);
+                    goto default;
+                case "12":
+                    Console.WriteLine("BLOCKINGCOLLECTION - TryTake");
+                    await DSBlockingCollection.RunTryTake(50, 5);
+                    await DSBlockingCollection.RunTryTake(50, 50);
+                    await DSBlockingCollection.RunTryTake(50, 60);
                     goto default;
                 default:
                     Console.WriteLine();
