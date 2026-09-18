@@ -1,5 +1,4 @@
 ﻿using System.Collections.Concurrent;
-using System.Security.AccessControl;
 
 namespace SystemCollectionsConcurrent
 {
@@ -177,6 +176,33 @@ namespace SystemCollectionsConcurrent
             await Task.WhenAll(producerCompleteTask, consumerTask);
 
             Console.WriteLine($"itemCounts: {itemCounts} | producerCounter: {producerCounter} | consumerCounter: {consumerCounter}");
+        }
+
+        public static async Task RunEnumerable(int itemCounts, int upperbound)
+        {
+            using (BlockingCollection<int> bc = new BlockingCollection<int>(upperbound))
+            {
+                Task producerTask = Task.Run(async () =>
+                {
+                    int threadId = Environment.CurrentManagedThreadId;
+                    int? taskId = Task.CurrentId;
+
+                    for(int i = 0; i < itemCounts; i++)
+                    {
+                        bc.Add(i);
+                        Console.WriteLine($"[Producer Worker {Task.CurrentId}] Thread {threadId} | Produced {i}");
+                    }
+
+                    bc.CompleteAdding();
+                });
+
+                foreach(int item in bc.GetConsumingEnumerable())
+                {
+                    Console.WriteLine($"[Consumer Worker] | Consumed {item}");
+                }
+
+                await producerTask;
+            }
         }
     }
 }
