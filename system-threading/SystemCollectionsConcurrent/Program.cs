@@ -19,6 +19,7 @@ class Program
             Console.WriteLine("[10] - IProducerConsumerCollection<T>");
             Console.WriteLine("[11] - BlockingCollection - Take");
             Console.WriteLine("[12] - BlockingCollection - TryTake");
+            Console.WriteLine("[13] - BlockingCollection - TryTakeFromAny");
 
             string? key = Console.ReadLine();
 
@@ -75,6 +76,10 @@ class Program
                     await DSBlockingCollection.RunTryTake(50, 5);
                     await DSBlockingCollection.RunTryTake(50, 50);
                     await DSBlockingCollection.RunTryTake(50, 60);
+                    goto default;
+                case "13":
+                    Console.WriteLine("BLOCKINGCOLLECTION - TryTakeFromAny");
+                    await DSBlockingCollection.RunTryTakeFromAny(20, 5);
                     goto default;
                 default:
                     Console.WriteLine();

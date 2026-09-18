@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Security.AccessControl;
 
 namespace SystemCollectionsConcurrent
 {
@@ -96,6 +97,86 @@ namespace SystemCollectionsConcurrent
                 Console.WriteLine("Sum[0..{0}) = {1}, should be {2}", itemCounts, outerSum, ((itemCounts * (itemCounts - 1)) / 2));
                 Console.WriteLine("bc.IsCompleted = {0} (should be true)", bc.IsCompleted);
             }
+        }
+
+        public static async Task RunTryTakeFromAny(int itemCounts, int upperbound)
+        {
+            Console.WriteLine($"1. Create a BlockingCollection<int>[] instance with 2 BlockingCollection<int> with upperboud {upperbound}");
+            BlockingCollection<int>[] bcs = [
+                new BlockingCollection<int>(upperbound),
+                new BlockingCollection<int>(upperbound)
+            ];
+
+            int producerCounter = 0;
+            Console.WriteLine($"2. TryAddToAny() {itemCounts} items");
+            Action<int> producer = (i) =>
+            {
+                int threadId = Environment.CurrentManagedThreadId;
+                int? taskId = Task.CurrentId;
+
+                int resultCollection = -1;
+                while ((resultCollection = BlockingCollection<int>.TryAddToAny(bcs, i)) == -1)
+                {
+                    Thread.Sleep(1);
+                }
+
+                Interlocked.Increment(ref producerCounter);
+                Console.WriteLine($"[Producer Worker {Task.CurrentId}] Thread {threadId} | Produced {i} into resultCollection:{resultCollection}");
+            };
+
+            Action producerComplete = () =>
+            {
+                int threadId = Environment.CurrentManagedThreadId;
+                int? taskId = Task.CurrentId;
+
+                foreach (var bc in bcs)
+                {
+                    bc.CompleteAdding();
+                }
+
+                Console.WriteLine($"[Producer Completion Worker {Task.CurrentId}] Thread {threadId} | Sent CompleteAdding()");
+            };
+
+            var producerTasks = Enumerable.Range(0, itemCounts).Select(i => 
+                {
+                    int itemToProduce = i;
+                    return Task.Run(() => producer(itemToProduce));
+                })
+                .ToArray();
+            var producerCompleteTask = Task.WhenAll(producerTasks).ContinueWith(_ => producerComplete());
+
+
+            Console.WriteLine($"3. TryTakeFromAny() {itemCounts} items");
+            int consumerCounter = 0;
+            Action consumer = () =>
+            {
+                int threadId = Environment.CurrentManagedThreadId;
+                int? taskId = Task.CurrentId;
+
+                try
+                {
+                    // TakeFromAny will block efficiently until an item is ready.
+                    // It automatically throws an ArgumentException when all collections are marked complete AND empty.
+                    while (true)
+                    {
+                        int resultCollection = BlockingCollection<int>.TakeFromAny(bcs, out int item);
+
+                        Interlocked.Increment(ref consumerCounter);
+                        Console.WriteLine($"[Consumer Worker {Task.CurrentId}] Thread {threadId} | Consumed {item} resultCollection:{resultCollection}");
+                    }
+                }
+                catch (ArgumentException)
+                {
+                    // This exception is explicitly thrown by TakeFromAny when all collections in the array are marked as completed.
+                    Console.WriteLine($"[Consumer Worker {Task.CurrentId}] Thread {threadId} | All collections completed. Exiting consumer safely.");
+                }
+            };
+
+            var consumerTask = Task.Run(consumer);
+
+            await Task.WhenAll(producerCompleteTask, consumerTask);
+
+            Console.WriteLine($"itemCounts: {itemCounts} | producerCounter: {producerCounter} | consumerCounter: {consumerCounter}");
         }
     }
 }
