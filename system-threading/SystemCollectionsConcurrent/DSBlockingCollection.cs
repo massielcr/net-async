@@ -182,7 +182,7 @@ namespace SystemCollectionsConcurrent
         {
             using (BlockingCollection<int> bc = new BlockingCollection<int>(upperbound))
             {
-                Task producerTask = Task.Run(async () =>
+                Task producerTask = Task.Run(() =>
                 {
                     int threadId = Environment.CurrentManagedThreadId;
                     int? taskId = Task.CurrentId;
