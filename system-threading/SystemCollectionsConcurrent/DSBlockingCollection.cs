@@ -34,7 +34,10 @@ namespace SystemCollectionsConcurrent
                     try
                     {
                         // Consume the BlockingCollection - bc.Take() relies on CompleteAdding() to know how to behave when the collection is empty
-                        while (true) Console.WriteLine($"[Consumer worker {Task.CurrentId}] Thread {threadId} | Consumed {bc.Take()}");
+                        while (true) // =>  busy waitting forever. 
+                        {
+                            Console.WriteLine($"[Consumer worker {Task.CurrentId}] Thread {threadId} | Consumed {bc.Take()}"); // => It throws an exception when CompleteAdding() has been called
+                        }
                     }
                     catch (InvalidOperationException)
                     {
@@ -77,7 +80,7 @@ namespace SystemCollectionsConcurrent
                     int localItem;
                     int localSum = 0;
 
-                    while (bc.TryTake(out localItem, Timeout.Infinite))
+                    while (bc.TryTake(out localItem, Timeout.Infinite)) // =>  tells the thread to wait forever if the collection is empty. The loop stops and returns false only when CompleteAdding() has been called on the collection and it is completely empty
                     {
                         localSum += localItem;
                         Console.WriteLine($"[Consumer worker {Task.CurrentId}] Thread {threadId} | Consumed {localItem}");
