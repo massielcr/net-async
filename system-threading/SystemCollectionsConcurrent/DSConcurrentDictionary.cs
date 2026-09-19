@@ -67,5 +67,84 @@ namespace SystemCollectionsConcurrent
             value = cd.GetOrAdd(2, 500);
             Console.WriteLine($"After second GetOrAdd, cd[2] = {value} - should be 100 -");
         }
+
+        internal static async Task RunTryAddUpdateRemove()
+        {
+            int numFailures = 0; // for bookkeeping
+
+            Console.WriteLine($"1. Create empty ConcurrentDictionary<int, string> instance");
+            ConcurrentDictionary<int, String> cd = new();
+
+            Console.WriteLine($"2. TryAdd() not existing key");
+            if (cd.TryAdd(1, "one"))
+            {
+                Console.WriteLine("CD.TryAdd() succeeded");
+            }
+            else
+            {
+                Console.WriteLine("CD.TryAdd() failed");
+                numFailures++;
+            }
+
+            Console.WriteLine($"3. TryAdd() existing key");
+            if (!cd.TryAdd(1, "uno"))
+            {
+                Console.WriteLine("CD.TryAdd() failed");
+                numFailures++;
+            }
+            else
+            {
+                Console.WriteLine("CD.TryAdd() succeeded");                
+            }
+
+            Console.WriteLine($"4. TryUpdate() not existing key or invalid comparison value");
+            if (!cd.TryUpdate(2, "eine", "uno"))
+            {
+                Console.WriteLine("CD.TryUpdate() failed");
+                numFailures++;
+            }
+            else
+            {
+                Console.WriteLine("CD.TryUpdate() succeeded");
+            }
+
+            Console.WriteLine($"5. TryUpdate() existing key and valid comparison value");
+            if (cd.TryUpdate(1, "eine", "one"))
+            {
+                Console.WriteLine("CD.TryUpdate() succeeded");                
+            }
+            else
+            {
+                Console.WriteLine("CD.TryUpdate() failed");
+                numFailures++;
+            }
+
+            Console.WriteLine($"6. TryRemove() not existing key");
+            string value1;
+            if (!cd.TryRemove(2, out value1))
+            {
+                Console.WriteLine("CD.TryRemove() failed");
+                numFailures++;
+            }
+            else
+            {
+                Console.WriteLine("CD.TryRemove() succeeded");                
+            }
+
+            Console.WriteLine($"7. TryRemove() existing key");
+            string value2;
+            if (cd.TryRemove(1, out value2))
+            {
+                Console.WriteLine("CD.TryRemove() succeeded");                
+            }
+            else
+            {
+                Console.WriteLine("CD.TryRemove() failed");
+                numFailures++;
+            }
+
+            // If nothing went wrong, say so
+            if (numFailures == 0) Console.WriteLine("  OK!");
+        }
     }
 }

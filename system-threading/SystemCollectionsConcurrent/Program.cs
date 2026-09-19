@@ -22,7 +22,8 @@ class Program
             Console.WriteLine("[13] - BlockingCollection - TryTakeFromAny");
             Console.WriteLine("[14] - BlockingCollection - Enumerable");
             Console.WriteLine("[15] - ConcurrentDictionary");
-            Console.WriteLine("[16] - ConcurrentDictionary - AddOrUpdate");
+            Console.WriteLine("[16] - ConcurrentDictionary - AddOrUpdate|GetOrAdd");
+            Console.WriteLine("[17] - ConcurrentDictionary - TryAdd|TryUpdate|TryRemove");
 
             string? key = Console.ReadLine();
 
@@ -101,6 +102,10 @@ class Program
                 case "16":
                     Console.WriteLine("CONCURRENTDICTIONARY - AddOrUpdate");
                     await DSConcurrentDictionary.RunAddOrUpdate(10000);
+                    goto default;
+                case "17":
+                    Console.WriteLine("CONCURRENTDICTIONARY - TryAdd|TryUpdate|TryRemove");
+                    await DSConcurrentDictionary.RunTryAddUpdateRemove();
                     goto default;
                 default:
                     Console.WriteLine();
