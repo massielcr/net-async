@@ -22,6 +22,7 @@ class Program
             Console.WriteLine("[13] - BlockingCollection - TryTakeFromAny");
             Console.WriteLine("[14] - BlockingCollection - Enumerable");
             Console.WriteLine("[15] - ConcurrentDictionary");
+            Console.WriteLine("[16] - ConcurrentDictionary - AddOrUpdate");
 
             string? key = Console.ReadLine();
 
@@ -96,6 +97,10 @@ class Program
                     int numProcs = Environment.ProcessorCount;
                     int concurrencyLevel = numProcs * 2;
                     await DSConcurrentDictionary.Run(20, concurrencyLevel, 20);
+                    goto default;
+                case "16":
+                    Console.WriteLine("CONCURRENTDICTIONARY - AddOrUpdate");
+                    await DSConcurrentDictionary.RunAddOrUpdate(10000);
                     goto default;
                 default:
                     Console.WriteLine();
