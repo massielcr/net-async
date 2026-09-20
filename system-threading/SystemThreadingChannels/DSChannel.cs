@@ -1,4 +1,5 @@
-﻿using System.Threading.Channels;
+﻿using System.Reflection.PortableExecutable;
+using System.Threading.Channels;
 
 namespace SystemThreadingChannels
 {
@@ -56,11 +57,55 @@ namespace SystemThreadingChannels
                 channel.Writer.Complete();
             });
 
-
-            await foreach (Coordinate c in channel.Reader.ReadAllAsync())
+            while (!channel.Reader.Completion.IsCompleted)
             {
-                Console.WriteLine($"Latitude:{c.Latitude} Longitude:{c.Longitude}");
+                if (channel.Reader.TryRead(out Coordinate c)) //=> TryRead returns right away resulting on true/false
+                {
+                    Console.WriteLine($"Latitude:{c.Latitude} Longitude:{c.Longitude}");
+                }
             }
+
+            await producer;
+
+            Console.WriteLine("done");
+        }
+
+        internal static async Task RunProducerWriteAsync(Coordinate coordinate)
+        {
+            Channel<Coordinate> channel = Channel.CreateBounded<Coordinate>(1);
+
+            Task producer = Task.Run(async () =>
+            {
+                while(coordinate is { Latitude: < 90, Longitude: < 180})
+                {
+
+                    coordinate = coordinate with
+                    {
+                        Latitude = coordinate.Latitude + 1.5,
+                        Longitude = coordinate.Longitude + 2,
+                    };
+
+                    await channel.Writer.WriteAsync(coordinate);
+                }
+
+                channel.Writer.Complete();
+            });
+
+            try
+            {
+                while (true)
+                {
+                    Coordinate c = await channel.Reader.ReadAsync();
+                    Console.WriteLine($"Latitude:{c.Latitude} Longitude:{c.Longitude}");
+                }
+            }
+            catch(ChannelClosedException)
+            {
+                Console.WriteLine("done");
+            }
+            
+
+            await producer;
         }
     }
 

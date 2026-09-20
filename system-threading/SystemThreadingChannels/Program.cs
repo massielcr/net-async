@@ -8,7 +8,8 @@ class Program
         {
             Console.WriteLine("OPTIONS:");
             Console.WriteLine("[1]  - Channel<T>");
-            Console.WriteLine("[2]  - TryWrite");
+            Console.WriteLine("[2]  - Channel<T> - TryWrite");
+            Console.WriteLine("[3]  - Channel<T> - WriteAsync");
 
             string? key = Console.ReadLine();
 
@@ -19,6 +20,9 @@ class Program
                     goto default;
                 case "2":
                     await DSChannel.RunProducerTryWrite(new Coordinate(Latitude: 85, Longitude: 173));
+                    goto default;
+                case "3":
+                    await DSChannel.RunProducerWriteAsync(new Coordinate(Latitude: 85, Longitude: 173));
                     goto default;
                 default:
                     Console.WriteLine();
