@@ -107,6 +107,37 @@ namespace SystemThreadingChannels
 
             await producer;
         }
+
+        internal static async Task RunProducerWaitToWriteAsync(Coordinate coordinate)
+        {
+            Channel<Coordinate> channel = Channel.CreateBounded<Coordinate>(1);
+
+            Task producer = Task.Run(async () =>
+            {
+                while (coordinate is { Latitude: < 90, Longitude: < 180 }  && await channel.Writer.WaitToWriteAsync())
+                {
+                    var tempCoordinate = coordinate with
+                    {
+                        Latitude = coordinate.Latitude + 1.5,
+                        Longitude = coordinate.Longitude + 2
+                    };
+
+                    if (channel.Writer.TryWrite(item: tempCoordinate))
+                    {
+                        coordinate = tempCoordinate;
+                    }
+                }
+
+                channel.Writer.Complete();
+            });
+
+            await foreach(Coordinate c in channel.Reader.ReadAllAsync())
+            {
+                Console.WriteLine($"Latitude:{c.Latitude} Longitude:{c.Longitude}");
+            }
+
+            await producer;
+        }
     }
 
     public readonly record struct Coordinate(double Latitude, double Longitude);
