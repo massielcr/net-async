@@ -1,4 +1,5 @@
 <Solution>
   <Project Path="SystemCollectionsConcurrent/SystemCollectionsConcurrent.csproj" Id="47294f70-e5a3-4f93-8082-9caf1ab2c25c" />
+  <Project Path="SystemThreadingChannels/SystemThreadingChannels.csproj" Id="2727a419-8eab-427a-8b87-814658e9d8d7" />
   <Project Path="SystemThreadingTasks/SystemThreadingTasks.csproj" />
 </Solution>
