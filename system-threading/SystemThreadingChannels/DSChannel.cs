@@ -1,5 +1,4 @@
-﻿using System.Reflection.PortableExecutable;
-using System.Threading.Channels;
+﻿using System.Threading.Channels;
 
 namespace SystemThreadingChannels
 {
@@ -102,8 +101,7 @@ namespace SystemThreadingChannels
             catch(ChannelClosedException)
             {
                 Console.WriteLine("done");
-            }
-            
+            }            
 
             await producer;
         }
@@ -137,6 +135,56 @@ namespace SystemThreadingChannels
             }
 
             await producer;
+
+            Console.WriteLine("done");
+        }
+
+        internal static async Task RunMultipleProducersMultipleConsumer(Coordinate coordinate)
+        {
+            Channel<Coordinate> channel = Channel.CreateUnbounded<Coordinate>(
+                new UnboundedChannelOptions
+                {
+                    SingleReader = false,
+                    SingleWriter = false
+                }
+            );
+
+            Task[] producerTasks = Enumerable.Range(0, 3).Select(i => ProduceAsync(i, channel)).ToArray();
+            Task[] consumerTasks = Enumerable.Range(0, 2).Select(_ => ConsumeAsync(channel)).ToArray();
+
+
+            await Task.WhenAll(producerTasks);
+            channel.Writer.Complete();
+
+
+            await Task.WhenAll(consumerTasks);
+
+
+            static async Task ProduceAsync(int i, Channel<Coordinate> channel)
+            {
+                Coordinate coordinate = new( Latitude: -90 + (i * 30), Longitude: -180 + (i * 60));
+
+                while (coordinate is { Latitude: < 90, Longitude: < 180 })
+                {
+                    coordinate = coordinate with
+                    {
+                        Latitude = coordinate.Latitude + 1.5,
+                        Longitude = coordinate.Longitude + 2
+                    };
+
+                    await channel.Writer.WriteAsync(coordinate);
+                }
+            }
+
+            static async Task ConsumeAsync(Channel<Coordinate> channel)
+            {
+                await foreach(Coordinate c in channel.Reader.ReadAllAsync())
+                {
+                    Console.WriteLine($"Latitude:{c.Latitude} Longitude:{c.Longitude}");
+                }
+
+                Console.WriteLine("done");
+            }
         }
     }
 
