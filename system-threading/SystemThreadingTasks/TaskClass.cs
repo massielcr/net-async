@@ -29,7 +29,7 @@
             await Task.WhenAll(t1, t2, t3);
         }
 
-        internal static async Task RunWaitToCompleteasks(int min, int max, int tasksCount)
+        internal static async Task RunWhenAnyTasks(int min, int max, int tasksCount)
         {
             Action action = () =>
             {

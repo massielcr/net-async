@@ -31,7 +31,7 @@ class Program
                     await TaskClass.RunInstantiation();
                     goto default;
                 case "6":
-                    await TaskClass.RunWaitToCompleteasks(500, 3000, 3);
+                    await TaskClass.RunWhenAnyTasks(500, 3000, 3);
                     goto default;
                 default:
                     Console.WriteLine();
