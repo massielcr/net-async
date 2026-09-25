@@ -11,6 +11,7 @@ class Program
             Console.WriteLine("[1] - Enums - ConfigureAwaitOptions");
             Console.WriteLine("[2] - Enums - TaskStatus");
             Console.WriteLine("[5] - Task  - instantiation");
+            Console.WriteLine("[6] - Task  - Task.WaitAny");
 
             string? key = Console.ReadLine();
 
@@ -28,6 +29,9 @@ class Program
                     goto default;
                 case "5":
                     await TaskClass.RunInstantiation();
+                    goto default;
+                case "6":
+                    await TaskClass.RunWaitToCompleteasks(500, 3000, 3);
                     goto default;
                 default:
                     Console.WriteLine();
