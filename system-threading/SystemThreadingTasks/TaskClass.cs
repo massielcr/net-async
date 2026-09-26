@@ -59,7 +59,7 @@
             }
         }
 
-        internal static async Task RunWhenAllTasks(int timeout, int workersCount)
+        internal static async Task RunWhenAllTasks(int timer, int workersCount)
         {
             Console.WriteLine($"1. Created {workersCount} Tasks");
 
@@ -67,9 +67,9 @@
             for(int i = 0; i < workersCount; i++)
             {
                 tasks[i] = Task.Factory.StartNew(async  (state) => {
-                    int timer = (int)state! * timeout;
+                    int currentTimer = (int)state! * timer;
                     await Task.Delay(timer);
-                    Console.WriteLine($"Task slept for {timer} in Thread {Thread.CurrentThread.ManagedThreadId}");
+                    Console.WriteLine($"Task slept for {currentTimer} in Thread {Thread.CurrentThread.ManagedThreadId}");
                 }, 
                 i,
                 CancellationToken.None,
@@ -105,6 +105,72 @@
             }            
         }
 
+        internal static void RunTaskCanceledException(int timer, int cancelationTime, int workersCount)
+        {
+            Console.WriteLine($"1. Create CancellationTokenSource and get Token");
+            CancellationTokenSource cts = new();
+            CancellationToken cancellationToken = cts.Token;
+
+            Console.WriteLine($"2. Create {workersCount} Tasks");
+            Task[] tasks = new Task[workersCount];
+            for(int i = 0; i < workersCount; i++)
+            {
+                switch (i % 4)
+                {
+                    case 0:
+                        tasks[i] = Task.Run(() => Thread.Sleep(timer));
+                        break;
+                    case 1:
+                        tasks[i] = Task.Run(() => Thread.Sleep(timer), cancellationToken);
+                        break;
+                    case 2:
+                        tasks[i] = Task.Run(() => { throw new NotSupportedException(); });
+                        break;
+                    default:
+                        tasks[i] = Task.Run(() =>
+                        {
+                            Thread.Sleep(timer);
+                            if (cancellationToken.IsCancellationRequested)
+                            {
+                                cancellationToken.ThrowIfCancellationRequested();
+                            }
+                            Thread.Sleep(timer);
+                        }, cancellationToken);
+                        break;
+
+                }
+            }
+
+            cts.CancelAfter(cancelationTime);
+
+            try
+            {
+                Console.WriteLine($"3. WaitAll tasks");
+                Task.WaitAll(tasks);
+            }
+            catch(AggregateException aex)
+            {
+                Console.WriteLine("3.1 One or more exceptions occurred");
+                foreach(var ex in aex.Flatten().InnerExceptions)
+                {
+                    Console.WriteLine($"{ex.GetType().Name}: {ex.Message}");
+                }
+            }
+
+            Console.WriteLine($"4. Status of tasks:");
+            foreach(Task task in tasks)
+            {
+                Console.WriteLine($"Task #{task.Id}, {task.Status}");
+                if (task.Exception != null)
+                {
+                    foreach(Exception e in task.Exception.InnerExceptions)
+                    {
+                        Console.WriteLine($"{e.GetType().Name}: {e.Message}");
+                    }
+                }
+            }
+
+        }
     }
 }
 

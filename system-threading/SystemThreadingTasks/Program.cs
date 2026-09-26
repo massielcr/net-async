@@ -13,6 +13,7 @@ class Program
             Console.WriteLine("[5] - Task  - instantiation");
             Console.WriteLine("[6] - Task  - Task.WaitAny");
             Console.WriteLine("[7] - Task  - Task.WhenAll");
+            Console.WriteLine("[8] - Task  - TaskCanceledException");
 
             string? key = Console.ReadLine();
 
@@ -36,6 +37,9 @@ class Program
                     goto default;
                 case "7":
                     await TaskClass.RunWhenAllTasks(200, 10);
+                    goto default;
+                case "8":
+                    TaskClass.RunTaskCanceledException(2000, 250, 12);
                     goto default;
                 default:
                     Console.WriteLine();
