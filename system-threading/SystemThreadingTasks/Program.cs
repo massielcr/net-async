@@ -12,6 +12,7 @@ class Program
             Console.WriteLine("[2] - Enums - TaskStatus");
             Console.WriteLine("[5] - Task  - instantiation");
             Console.WriteLine("[6] - Task  - Task.WaitAny");
+            Console.WriteLine("[7] - Task  - Task.WhenAll");
 
             string? key = Console.ReadLine();
 
@@ -32,6 +33,9 @@ class Program
                     goto default;
                 case "6":
                     await TaskClass.RunWhenAnyTasks(500, 3000, 3);
+                    goto default;
+                case "7":
+                    await TaskClass.RunWhenAllTasks(200, 10);
                     goto default;
                 default:
                     Console.WriteLine();

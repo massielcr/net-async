@@ -29,7 +29,7 @@
             await Task.WhenAll(t1, t2, t3);
         }
 
-        internal static async Task RunWhenAnyTasks(int min, int max, int tasksCount)
+        internal static async Task RunWhenAnyTasks(int min, int max, int workersCount)
         {
             Action action = () =>
             {
@@ -39,7 +39,7 @@
                 Console.WriteLine($"Task {Task.CurrentId} slept for {timer} on Thread {Thread.CurrentThread.ManagedThreadId}");
             };
 
-            Task[] tasks = Enumerable.Range(0, tasksCount).Select(_ => Task.Run(() => action())).ToArray();
+            Task[] tasks = Enumerable.Range(0, workersCount).Select(_ => Task.Run(() => action())).ToArray();
 
             try
             {
@@ -58,5 +58,53 @@
                 Console.WriteLine("An exception occurred.");
             }
         }
+
+        internal static async Task RunWhenAllTasks(int timeout, int workersCount)
+        {
+            Console.WriteLine($"1. Created {workersCount} Tasks");
+
+            Task[] tasks = new Task[workersCount];
+            for(int i = 0; i < workersCount; i++)
+            {
+                tasks[i] = Task.Factory.StartNew(async  (state) => {
+                    int timer = (int)state! * timeout;
+                    await Task.Delay(timer);
+                    Console.WriteLine($"Task slept for {timer} in Thread {Thread.CurrentThread.ManagedThreadId}");
+                }, 
+                i,
+                CancellationToken.None,
+                TaskCreationOptions.DenyChildAttach,
+                TaskScheduler.Default)
+                .Unwrap();
+            }
+
+            Task allTasks = Task.WhenAll(tasks);
+
+            try
+            {
+                Console.WriteLine($"2. WhenAll tasks to complete");
+
+                await allTasks;
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("One or more exceptions occurred");
+                if (allTasks.Exception != null)
+                {
+                    foreach (var e in allTasks.Exception.Flatten().InnerExceptions)
+                    {
+                        Console.WriteLine(e.Message);
+                    }
+                }                    
+            }
+
+            Console.WriteLine($"3. Display Tasks statuses");
+            foreach (Task t in tasks)
+            {
+                Console.WriteLine($"Task {t.Id} {t.Status}");
+            }            
+        }
+
     }
 }
+
