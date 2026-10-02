@@ -237,7 +237,6 @@ namespace SystemThreadingTasks
 
                 if (Directory.Exists(dir))
                 {
-                    ParallelOptions parallelOptions = new ParallelOptions { CancellationToken = cancellationToken };
                     Parallel.ForEach(Directory.GetFiles(dir),  f =>
                     {
                         if (cancellationToken.IsCancellationRequested)
@@ -271,6 +270,30 @@ namespace SystemThreadingTasks
             {
                 cancellationTokenSource.Dispose();
             }
+        }
+
+        internal static async Task RunScramblesWords(string[] words)
+        {
+            Console.WriteLine($"1. Create Tasks to scramble each word on the input array");
+            List<Task> tasks = [];
+            foreach(string word in words)
+            {
+                Task t = Task.Run(() =>
+                {
+                    char[] chars = word.ToCharArray();
+                    double[] order = new double[chars.Length];
+                    for (int i = 0; i < order.Length; i++)
+                    {
+                        order[i] = Random.Shared.NextDouble();
+                    }
+                    Array.Sort(order, chars);
+                    Console.WriteLine($"{word} --> {new String(chars)}");
+                });
+
+                tasks.Add(t);
+            }
+
+            await Task.WhenAll(tasks);
         }
     }
 }
