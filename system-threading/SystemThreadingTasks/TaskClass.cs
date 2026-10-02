@@ -117,13 +117,22 @@ namespace SystemThreadingTasks
 
             foreach(string directory in dirNames)
             {
+                string currentDir = directory;
+
                 Task t = Task.Run(() =>
-                {                   
-                    foreach (string path in Directory.GetFiles(directory))
+                {
+                    try
                     {
-                        bag.Add(path);
-                        Console.WriteLine($"Task {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId} Directory: {directory} Path: {path}");
+                        foreach (string path in Directory.GetFiles(currentDir))
+                        {
+                            bag.Add(path);
+                            Console.WriteLine($"Task {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId} Directory: {currentDir} Path: {path}");
+                        }
                     }
+                    catch(Exception ex)
+                    {
+                        Console.WriteLine($"[Error] Failed to process directory {currentDir}: {ex.Message}");
+                    }                    
                 });
 
                 tasks.Add(t);
@@ -140,9 +149,8 @@ namespace SystemThreadingTasks
 
             Console.WriteLine($"5. Display {bag.Count} files");
             int i = 1;
-            while(!bag.IsEmpty)
+            while (bag.TryTake(out string? result))
             {
-                bag.TryTake(out string? result);
                 Console.WriteLine($"{i}.- {result}");
                 i++;
             }
@@ -213,6 +221,56 @@ namespace SystemThreadingTasks
                 }
             }
 
+        }
+
+        internal static async Task RunParallelTasks(string dir, CancellationTokenSource cancellationTokenSource)
+        {
+            Console.WriteLine($"1. Create List<Tuple<string, string, long, DateTime>>");
+            List<(string, string?, long, DateTime)> files = [];
+
+            Console.WriteLine($"2. Create Task to record file info from all files in the {dir} directory in Parrallel");
+            CancellationToken cancellationToken = cancellationTokenSource.Token;
+
+            Task t = Task.Run(() =>
+            {
+                object obj = new object();
+
+                if (Directory.Exists(dir))
+                {
+                    ParallelOptions parallelOptions = new ParallelOptions { CancellationToken = cancellationToken };
+                    Parallel.ForEach(Directory.GetFiles(dir),  f =>
+                    {
+                        if (cancellationToken.IsCancellationRequested)
+                            cancellationToken.ThrowIfCancellationRequested();
+
+                        var fi = new FileInfo(f);
+                        lock (obj)
+                        {
+                            files.Add((fi.Name, fi.DirectoryName, fi.Length, fi.LastWriteTimeUtc));
+                        }
+                    });
+                }
+            });
+
+            try
+            {
+                //cancellationTokenSource.Cancel();
+                await t;
+                Console.WriteLine($"Retrieved information for {files.Count} files.");
+            }
+            catch(AggregateException ex)
+            {
+                Console.WriteLine("Exception messages:");
+                foreach(var ie in ex.InnerExceptions)
+                {
+                    Console.WriteLine($"{ie.GetType().Name}: {ie.Message}");
+                }
+                Console.WriteLine($"Task status: {t.Status}");
+            }
+            finally
+            {
+                cancellationTokenSource.Dispose();
+            }
         }
     }
 }
