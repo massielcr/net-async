@@ -1,4 +1,6 @@
-﻿namespace SystemThreadingTasks
+﻿using System.Collections.Concurrent;
+
+namespace SystemThreadingTasks
 {
     internal class TaskClass
     {
@@ -103,6 +105,47 @@
             {
                 Console.WriteLine($"Task {t.Id} {t.Status}");
             }            
+        }
+
+        internal static async Task RunWhenAllTasksInDirectory(string[] dirNames)
+        {
+            Console.WriteLine($"1. Create ConcurrentBag<string>");
+            ConcurrentBag<string> bag = [];
+
+            Console.WriteLine($"2. Create a Task to handle each Directory");
+            List<Task> tasks = [];
+
+            foreach(string directory in dirNames)
+            {
+                Task t = Task.Run(() =>
+                {                   
+                    foreach (string path in Directory.GetFiles(directory))
+                    {
+                        bag.Add(path);
+                        Console.WriteLine($"Task {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId} Directory: {directory} Path: {path}");
+                    }
+                });
+
+                tasks.Add(t);
+            }
+
+            Console.WriteLine($"3. Wait for all tasks to complete - Task.WhenAll");
+            await Task.WhenAll(tasks);
+
+            Console.WriteLine($"4. Display each task Status");
+            foreach (Task t in tasks)
+            {
+                Console.WriteLine($"Task {t.Id} Status: {t.Status}");
+            }
+
+            Console.WriteLine($"5. Display {bag.Count} files");
+            int i = 1;
+            while(!bag.IsEmpty)
+            {
+                bag.TryTake(out string? result);
+                Console.WriteLine($"{i}.- {result}");
+                i++;
+            }
         }
 
         internal static void RunTaskCanceledException(int timer, int cancelationTime, int workersCount)

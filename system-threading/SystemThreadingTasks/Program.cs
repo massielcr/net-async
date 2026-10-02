@@ -14,6 +14,7 @@ class Program
             Console.WriteLine("[6] - Task  - Task.WaitAny");
             Console.WriteLine("[7] - Task  - Task.WhenAll");
             Console.WriteLine("[8] - Task  - TaskCanceledException");
+            Console.WriteLine("[9] - Task  - Task.WhenAll - ConcurrentBag");
 
             string? key = Console.ReadLine();
 
@@ -40,6 +41,9 @@ class Program
                     goto default;
                 case "8":
                     TaskClass.RunTaskCanceledException(2000, 250, 12);
+                    goto default;
+                case "9":
+                    await TaskClass.RunWhenAllTasksInDirectory([".", ".." ]);
                     goto default;
                 default:
                     Console.WriteLine();
