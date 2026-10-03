@@ -17,7 +17,7 @@ class Program
             Console.WriteLine("[9]  - Task  - Task.WhenAll - ConcurrentBag");
             Console.WriteLine("[10] - Task  - Parallel.ForEach");
             Console.WriteLine("[11] - Task  - Scrambles Words");
-            Console.WriteLine("[12] - Task  - Scrambles Words");
+            Console.WriteLine("[12] - Task  - MyDocuments Files and Subdirectories");
 
             string? key = Console.ReadLine();
 

@@ -302,35 +302,40 @@ namespace SystemThreadingTasks
             Console.WriteLine($"1. Get MyDocuments directory path");
             string myDocumentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
 
-            Console.WriteLine($"2. Create task1 to get files and task2 to get subdirectories");
-            string[]? files = null;
-            string[]? subdirectories = null;
+            Console.WriteLine($"2. Create task1 to get files and task2 to get subdirectories");           
 
-            Task[] tasks = new Task[2];
-            tasks[0] = Task.Factory.StartNew(() => files = Directory.GetFiles(myDocumentsPath));
-            tasks[1] = Task.Factory.StartNew(() => subdirectories = Directory.GetDirectories(myDocumentsPath));
+            Task<string[]> fileTask = Task.Run(() => Directory.GetFiles(myDocumentsPath));
+            Task<string[]> subdirectoryTask = Task.Run(() => Directory.GetDirectories(myDocumentsPath));
 
             Console.WriteLine($"3. Create continuation task to list files and subdirectories");
-            await Task.Factory.ContinueWhenAll(tasks, completedTasks => {
+
+            try
+            {
+                await Task.WhenAll(fileTask, subdirectoryTask);
+
+                string[] files = await fileTask;
+                string[] subdirectories = await subdirectoryTask;
+
                 Console.WriteLine($"{myDocumentsPath} contains:");
-                if (subdirectories is not null)
+
+                foreach (var path in subdirectories)
                 {
-                    foreach (var path in subdirectories)
-                    {
-                        Console.WriteLine($"Subdirectory: {path}");
-                    }
+                    Console.WriteLine($"Subdirectory: {path}");
                 }
-                if (files is not null)
+
+                foreach (var path in files)
                 {
-                    foreach (var path in files)
-                    {
-                        Console.WriteLine($"File: {path}");
-                    }
+                    Console.WriteLine($"File: {path}");
                 }
-            });
-
-
-
+            }
+            catch(UnauthorizedAccessException ex)
+            {
+                Console.WriteLine($"Denied access to {myDocumentsPath} folder");
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
+            }           
         }
     }
 }
