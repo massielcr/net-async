@@ -17,6 +17,7 @@ class Program
             Console.WriteLine("[9]  - Task  - Task.WhenAll - ConcurrentBag");
             Console.WriteLine("[10] - Task  - Parallel.ForEach");
             Console.WriteLine("[11] - Task  - Scrambles Words");
+            Console.WriteLine("[12] - Task  - Scrambles Words");
 
             string? key = Console.ReadLine();
 
@@ -54,6 +55,9 @@ class Program
                 case "11":
                     string[] words = ["reason", "editor", "rioter", "rental", "senior", "regain", "ordain", "rained"];
                     await TaskClass.RunScramblesWords(words);
+                    goto default;
+                case "12":
+                    await TaskClass.RunMyDocumentsFilesTasks();
                     goto default;
                 default:
                     Console.WriteLine();
