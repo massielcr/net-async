@@ -337,6 +337,46 @@ namespace SystemThreadingTasks
                 Console.WriteLine($"An error occurred: {ex.Message}");
             }           
         }
+
+        internal static async Task RunRandomDatesContinuationTask()
+        {
+            Console.WriteLine($"1. Create first task to generate random dates");
+            Task<DateTime[]> firstTask = Task.Run(() =>
+            {
+                DateTime[] dates = new DateTime[100];
+                byte[] buffer = new byte[8];
+
+                int i = dates.GetLowerBound(0);
+                while(i <= dates.GetUpperBound(0))
+                {
+                    long ticks = Random.Shared.NextInt64(DateTime.MinValue.Ticks, DateTime.MaxValue.Ticks);
+                    dates[i] = new DateTime(ticks);
+                    i++;
+                }
+
+                return dates;
+            });
+
+            Console.WriteLine($"2. Create continuation task to get earliest and latest dates");
+            Task continuationTask = firstTask.ContinueWith((completedTask) =>
+            {
+                DateTime[] dates = completedTask.Result;
+                DateTime earliest = dates[0];
+                DateTime latest = earliest;
+
+                for (int i = dates.GetLowerBound(0) + 1; i <= dates.GetUpperBound(0); i++)
+                {
+                    if (dates[i] < earliest) { earliest = dates[i]; }
+                    if (dates[i] > latest) { latest = dates[i]; }
+                }
+
+                Console.WriteLine($"Earliest date is {earliest}");
+                Console.WriteLine($"Latest date is {latest}");
+
+            });
+
+            await continuationTask;
+        }
     }
 }
 

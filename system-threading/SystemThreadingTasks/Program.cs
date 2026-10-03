@@ -18,6 +18,7 @@ class Program
             Console.WriteLine("[10] - Task  - Parallel.ForEach");
             Console.WriteLine("[11] - Task  - Scrambles Words");
             Console.WriteLine("[12] - Task  - MyDocuments Files and Subdirectories");
+            Console.WriteLine("[13] - Task  - ContinueWith");
 
             string? key = Console.ReadLine();
 
@@ -58,6 +59,9 @@ class Program
                     goto default;
                 case "12":
                     await TaskClass.RunMyDocumentsFilesTasks();
+                    goto default;
+                case "13":
+                    await TaskClass.RunRandomDatesContinuationTask();
                     goto default;
                 default:
                     Console.WriteLine();
