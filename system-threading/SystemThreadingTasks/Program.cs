@@ -19,6 +19,7 @@ class Program
             Console.WriteLine("[11] - Task  - Scrambles Words");
             Console.WriteLine("[12] - Task  - MyDocuments Files and Subdirectories");
             Console.WriteLine("[13] - Task  - ContinueWith");
+            Console.WriteLine("[14] - Task  - ContinueWith TaskContinuationOptions.ExecuteSynchronously");
 
             string? key = Console.ReadLine();
 
@@ -62,6 +63,9 @@ class Program
                     goto default;
                 case "13":
                     await TaskClass.RunRandomDatesContinuationTask();
+                    goto default;
+                case "14":
+                    await TaskClass.RunContinueWithSynchronously();
                     goto default;
                 default:
                     Console.WriteLine();

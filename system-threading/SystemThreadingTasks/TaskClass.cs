@@ -1,4 +1,6 @@
 ﻿using System.Collections.Concurrent;
+using System.Diagnostics;
+using System.Timers;
 
 namespace SystemThreadingTasks
 {
@@ -340,6 +342,9 @@ namespace SystemThreadingTasks
 
         internal static async Task RunRandomDatesContinuationTask()
         {
+            Stopwatch stopwatch = new();
+            stopwatch.Start();
+
             Console.WriteLine($"1. Create first task to generate random dates");
             Task<DateTime[]> firstTask = Task.Run(() =>
             {
@@ -376,6 +381,40 @@ namespace SystemThreadingTasks
             });
 
             await continuationTask;
+
+            stopwatch.Stop();
+            Console.WriteLine($"{stopwatch.ElapsedMilliseconds}ms");
+        }
+
+        internal static async Task RunContinueWithSynchronously()
+        {
+            Stopwatch stopwatch = new();
+            stopwatch.Start();
+            
+            int counter = 0;
+
+            Console.WriteLine($"1. Create first task to increment counter");
+            Task firstTask = Task.Run(() =>
+            {
+                Interlocked.Increment(ref counter);
+                Console.WriteLine($"Incremented counter by Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId}");
+            });
+
+            Console.WriteLine($"2. Create continuation task to decrement counter");
+            Task continuationTask = firstTask.ContinueWith((completedTask) =>
+            {
+                Interlocked.Decrement(ref counter);
+                Console.WriteLine($"Decremented counter by Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId}");
+            }, 
+            TaskContinuationOptions.ExecuteSynchronously);
+
+
+            await continuationTask;
+
+            Console.WriteLine($"Counter: {counter}");
+
+            stopwatch.Stop();
+            Console.WriteLine($"{stopwatch.ElapsedMilliseconds}ms");
         }
     }
 }
