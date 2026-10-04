@@ -23,6 +23,7 @@ class Program
             Console.WriteLine("[15] - Task  - ContinueWith TaskContinuationOptions");
             Console.WriteLine("[16] - Task  - ContinueWith - Different scenarios");
             Console.WriteLine("[17] - Task  - Delay");
+            Console.WriteLine("[18] - Task  - Delay ContinueWith");
 
             string? key = Console.ReadLine();
 
@@ -78,6 +79,9 @@ class Program
                     goto default;
                 case "17":
                     await TaskClass.RunDelay();
+                    goto default;
+                case "18":
+                    await TaskClass.RunDelayContinueWith();
                     goto default;
                 default:
                     Console.WriteLine();

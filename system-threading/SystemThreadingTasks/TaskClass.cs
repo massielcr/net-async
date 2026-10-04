@@ -537,6 +537,22 @@ namespace SystemThreadingTasks
 
             Console.WriteLine($"Task: {task.Id} Status: {task.Status} Result: {task.Result}");
         }
+
+        internal static async Task RunDelayContinueWith()
+        {
+            Console.WriteLine($"1. Create a Task with a 1s delay and a continuation task");
+            Stopwatch stopwatch = Stopwatch.StartNew();
+            Task<long> task = Task.Delay(1000).ContinueWith(_ =>
+            {
+                stopwatch.Stop();
+                return stopwatch.ElapsedMilliseconds;
+            });
+
+            Console.WriteLine($"2. Display Result");
+
+            await task;
+            Console.WriteLine($"Elapsed milliseconds: {task.Result}");
+        }
     }
 }
 
