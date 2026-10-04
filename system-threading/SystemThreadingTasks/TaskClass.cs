@@ -572,6 +572,20 @@ namespace SystemThreadingTasks
             long result = await task;
             Console.WriteLine($"Elapsed milliseconds: {result}");
         }
+
+        internal static async Task RunDelayTimeSpan()
+        {
+            Console.WriteLine($"1. Create a Task with a child task with a 1.5s delay");
+            Task<int> task = Task.Run(async () =>
+            {
+                await Task.Delay(TimeSpan.FromSeconds(1.5));
+                return 42;
+            });
+
+            Console.WriteLine($"2. Display Result");
+            await task;
+            Console.WriteLine($"Status: {task.Status} Result: {task.Result}");
+        }
     }
 }
 
