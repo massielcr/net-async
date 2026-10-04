@@ -24,6 +24,7 @@ class Program
             Console.WriteLine("[16] - Task  - ContinueWith - Different scenarios");
             Console.WriteLine("[17] - Task  - Delay");
             Console.WriteLine("[18] - Task  - Delay ContinueWith");
+            Console.WriteLine("[19] - Task  - Delay child task");
 
             string? key = Console.ReadLine();
 
@@ -82,6 +83,9 @@ class Program
                     goto default;
                 case "18":
                     await TaskClass.RunDelayContinueWith();
+                    goto default;
+                case "19":
+                    await TaskClass.RunDelainInternalWatch();
                     goto default;
                 default:
                     Console.WriteLine();

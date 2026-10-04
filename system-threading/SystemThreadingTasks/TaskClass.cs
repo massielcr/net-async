@@ -553,6 +553,25 @@ namespace SystemThreadingTasks
             await task;
             Console.WriteLine($"Elapsed milliseconds: {task.Result}");
         }
+
+        internal static async Task RunDelainInternalWatch()
+        {
+            Console.WriteLine($"1. Create a Task with a child task with a 1s delay");
+            Task<long> task = Task.Run(async () =>
+            {
+                Stopwatch stopwatch = Stopwatch.StartNew();
+
+                await Task.Delay(1000);
+
+                stopwatch.Stop();
+                return stopwatch.ElapsedMilliseconds;
+            });
+
+
+            Console.WriteLine($"2. Display Result");
+            long result = await task;
+            Console.WriteLine($"Elapsed milliseconds: {result}");
+        }
     }
 }
 
