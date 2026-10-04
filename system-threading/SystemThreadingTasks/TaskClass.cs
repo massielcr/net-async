@@ -1,6 +1,5 @@
 ﻿using System.Collections.Concurrent;
 using System.Diagnostics;
-using System.Timers;
 
 namespace SystemThreadingTasks
 {
@@ -415,6 +414,107 @@ namespace SystemThreadingTasks
 
             stopwatch.Stop();
             Console.WriteLine($"{stopwatch.ElapsedMilliseconds}ms");
+        }
+
+        internal static async Task RunContinueWithContinuationOptions()
+        {
+            Console.WriteLine($"1. Create success Task");
+            Action success = () =>
+            {
+                Console.WriteLine($"Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId} - Begin successful transaction");
+            };
+
+            Console.WriteLine($"2. Create failure Task");
+            Action failure = () =>
+            {
+                Console.WriteLine($"Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId} - Begin transaction an encountered an error");
+                throw new InvalidOperationException("An error occurred");
+            };
+
+            Console.WriteLine($"3. Create commit Task");
+            Action<Task> commit = (antecedent) =>
+            {
+                Console.WriteLine($"Task: {Task.CurrentId} Thread:{Environment.CurrentManagedThreadId} - Commit transaction");
+            };
+
+            Console.WriteLine($"4. Create rollback Task");
+            Action<Task> rollback = (antecedent) =>
+            {
+                Console.WriteLine($"Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId} - Rollback Transaction");
+            };
+
+
+            Console.WriteLine($"5. Start continuation after successful task");
+            Task successTask = Task.Run(success);
+            Task successCommitTask = successTask.ContinueWith(commit, TaskContinuationOptions.OnlyOnRanToCompletion);
+            Task successRollbackTask = successTask.ContinueWith(rollback, TaskContinuationOptions.NotOnRanToCompletion);
+
+            try
+            {
+                await Task.WhenAll(successCommitTask, successRollbackTask);
+            }
+            catch (TaskCanceledException ex)
+            {
+                string cancelledTask = successCommitTask.IsCanceled ? nameof(successCommitTask) : nameof(successRollbackTask);
+                Console.WriteLine($"Error: {ex.Message} Task: {cancelledTask}");
+            }
+
+            Console.WriteLine($"6. Start continuation after failure task");
+            Task failureTask = Task.Run(failure);
+            Task failureCommitTask = failureTask.ContinueWith(commit, TaskContinuationOptions.OnlyOnRanToCompletion);
+            Task failureRollbackTask = failureTask.ContinueWith(rollback, TaskContinuationOptions.NotOnRanToCompletion);
+
+            try
+            {
+                await Task.WhenAll(failureCommitTask, failureRollbackTask);
+            }
+            catch(TaskCanceledException ex)
+            {
+                string cancelledTask = failureCommitTask.IsCanceled ? nameof(failureCommitTask) : nameof(failureRollbackTask);
+                Console.WriteLine($"Error: {ex.Message} Task: {cancelledTask}");
+            }           
+        }
+
+        internal static async Task RunContinuationDifferentScenariosTasks()
+        {
+            Console.WriteLine($"1. Create an action that prints a string");
+            Action<string> action = (str) =>
+            {
+                Console.WriteLine($"Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId} - {str}");
+            };
+
+            Console.WriteLine($"2. Create a function that negates the previous result");
+            Func<int, int> negate = (n) =>
+            {
+                int output = -n;
+
+                Console.WriteLine($"Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId} input: {n} output: {output}");
+
+                return output;
+            };
+
+            Console.WriteLine($"3. Sequence of unrelated input tasks ");
+            Task alphaTask = Task.Run(() => action("alpha"));
+            Task betaTask = alphaTask.ContinueWith(antecedent => action("beta"));
+            Task gammaTask = betaTask.ContinueWith(antecedent => action("gamma"));
+
+            await gammaTask;            
+
+
+            Console.WriteLine($"4. Sequence of dependent tasks ");
+            Task dependentChainTask = Task.Run(() => negate(5))
+                                      .ContinueWith(antecedent => negate(antecedent.Result))
+                                      .ContinueWith(antecedent => negate(antecedent.Result));
+
+            await dependentChainTask;
+
+
+            Console.WriteLine($"5. Sequence of tasks executing different unrelated actions");
+            Task mixedChainTask = Task.Run(() => negate(6))
+                                  .ContinueWith(_ => action("x"))
+                                  .ContinueWith(_ => negate(7));
+
+            await mixedChainTask;
         }
     }
 }

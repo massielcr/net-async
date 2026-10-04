@@ -20,6 +20,8 @@ class Program
             Console.WriteLine("[12] - Task  - MyDocuments Files and Subdirectories");
             Console.WriteLine("[13] - Task  - ContinueWith");
             Console.WriteLine("[14] - Task  - ContinueWith TaskContinuationOptions.ExecuteSynchronously");
+            Console.WriteLine("[15] - Task  - ContinueWith TaskContinuationOptions");
+            Console.WriteLine("[16] - Task  - ContinueWith - Different scenarios");
 
             string? key = Console.ReadLine();
 
@@ -66,6 +68,12 @@ class Program
                     goto default;
                 case "14":
                     await TaskClass.RunContinueWithSynchronously();
+                    goto default;
+                case "15":
+                    await TaskClass.RunContinueWithContinuationOptions();
+                    goto default;
+                case "16":
+                    await TaskClass.RunContinuationDifferentScenariosTasks();
                     goto default;
                 default:
                     Console.WriteLine();
