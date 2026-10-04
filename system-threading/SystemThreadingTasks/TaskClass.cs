@@ -516,6 +516,27 @@ namespace SystemThreadingTasks
 
             await mixedChainTask;
         }
+
+        internal static async Task RunDelay()
+        {
+            Console.WriteLine($"1. Create a Task that contains a Task with a 1s delay");
+            async Task<int> GetValueAsync()
+            {
+                Console.WriteLine($"Thread: {Environment.CurrentManagedThreadId} - ready to delay");
+
+                await Task.Delay(1000);
+
+                return 42;
+            };
+
+            Task<int> task = GetValueAsync();
+
+            Console.WriteLine($"2. Display Result");
+
+            await task;
+
+            Console.WriteLine($"Task: {task.Id} Status: {task.Status} Result: {task.Result}");
+        }
     }
 }
 
