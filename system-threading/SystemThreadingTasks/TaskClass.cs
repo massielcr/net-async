@@ -624,6 +624,58 @@ namespace SystemThreadingTasks
             {
                 Console.WriteLine($"Exception: {ex.Message}");
             }
+            finally
+            {
+                cancellationTokenSource.Dispose();
+            }
+
+            Console.WriteLine($"4. Display Results");
+            Console.WriteLine($"Status: {task.Status} Result: {(task.Status == TaskStatus.RanToCompletion ? task.Result : -1)}");
+        }
+
+        internal static async Task RunDelayTimeSpanWithCancellation()
+        {
+            Console.WriteLine($"1. Create CancellationTokenSource");
+            CancellationTokenSource cancellationTokenSource = new();
+
+            Console.WriteLine($"2. Create a Task with a child task with 1s delay from a TimeSpan and a Cancellation token");
+            Task<int> task = Task.Run(async () =>
+            {
+                Console.WriteLine($"Running Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId}");
+
+                await Task.Delay(TimeSpan.FromSeconds(1), cancellationTokenSource.Token);
+
+                return 42;
+            });
+
+
+            Console.WriteLine($"3. Trigger a Cancellation after 0.5s");
+            cancellationTokenSource.CancelAfter(500);
+
+            try
+            {
+                await task;
+            }
+            catch(AggregateException ex)
+            {
+                Console.WriteLine($"AggregateException: {ex.Message}");
+                foreach(Exception ie in ex.InnerExceptions)
+                {
+                    Console.WriteLine($"{ie.GetType().Name}: {ie.Message}");
+                }
+            }
+            catch(OperationCanceledException ex)
+            {
+                Console.WriteLine($"OperationCanceledException: {ex.Message}");
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine($"Exception: {ex.Message}");
+            }
+            finally
+            {
+                cancellationTokenSource.Dispose();
+            }
 
             Console.WriteLine($"4. Display Results");
             Console.WriteLine($"Status: {task.Status} Result: {(task.Status == TaskStatus.RanToCompletion ? task.Result : -1)}");
