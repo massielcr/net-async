@@ -586,6 +586,48 @@ namespace SystemThreadingTasks
             await task;
             Console.WriteLine($"Status: {task.Status} Result: {task.Result}");
         }
+
+        internal static async Task RunDelayWithCancellation()
+        {
+            Console.WriteLine($"1. Create CancellationTokenSource");
+            CancellationTokenSource cancellationTokenSource = new();
+
+            Console.WriteLine($"2. Create a Task with a child task with 1s delay and a Cancellation token");
+            Task<int> task = Task.Run(async () =>
+            {
+                Console.WriteLine($"Running Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId}");
+
+                await Task.Delay(1000, cancellationTokenSource.Token);
+
+                return 42;
+            });
+
+            Console.WriteLine($"3. Trigger a Cancellation after 0.5s");
+            cancellationTokenSource.CancelAfter(500);
+            try
+            {
+                await task;
+            }
+            catch(OperationCanceledException ex)
+            {
+                Console.WriteLine($"OperationCanceledException: {ex.Message}");
+            }
+            catch(AggregateException ex)
+            {
+                Console.WriteLine($"AggregateException: {ex.Message}");
+                foreach(Exception ie in ex.InnerExceptions)
+                {
+                    Console.WriteLine($"{ie.GetType().Name}: {ie.Message}");
+                }
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine($"Exception: {ex.Message}");
+            }
+
+            Console.WriteLine($"4. Display Results");
+            Console.WriteLine($"Status: {task.Status} Result: {(task.Status == TaskStatus.RanToCompletion ? task.Result : -1)}");
+        }
     }
 }
 

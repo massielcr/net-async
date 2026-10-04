@@ -26,6 +26,7 @@ class Program
             Console.WriteLine("[18] - Task  - Delay ContinueWith");
             Console.WriteLine("[19] - Task  - Delay child task");
             Console.WriteLine("[20] - Task  - Delay TimeSpan");
+            Console.WriteLine("[21] - Task  - Delay CancellationTokenSource");
 
             string? key = Console.ReadLine();
 
@@ -90,6 +91,9 @@ class Program
                     goto default;
                 case "20":
                     await TaskClass.RunDelayTimeSpan();
+                    goto default;
+                case "21":
+                    await TaskClass.RunDelayWithCancellation();
                     goto default;
                 default:
                     Console.WriteLine();
