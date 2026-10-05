@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace SystemThreadingTasks
 {
@@ -679,6 +680,53 @@ namespace SystemThreadingTasks
 
             Console.WriteLine($"4. Display Results");
             Console.WriteLine($"Status: {task.Status} Result: {(task.Status == TaskStatus.RanToCompletion ? task.Result : -1)}");
+        }
+
+        internal static async Task RunFromExceptionTask(string directoryPath)
+        {
+            Console.WriteLine($"1. Create a Task that will call the GetFilesLengthAsync method");
+            Task<long> task = GetFilesLengthAsync(directoryPath);
+
+            Console.WriteLine($"2. Display Results");
+            try
+            {
+                await task;
+                Console.WriteLine($"Status: {task.Status} Result: {(task.Status == TaskStatus.RanToCompletion ? task.Result : -1)}");
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine($"Exception: {ex.Message}");
+            }
+        }
+
+        private static Task<long> GetFilesLengthAsync(string directoryPath)
+        {
+            if (!Directory.Exists(directoryPath))
+            {
+                return Task.FromException<long>(new DirectoryNotFoundException("Invalid directory name"));
+            }
+
+            string[] files = Directory.GetFiles(directoryPath);
+
+            if (!files.Any())
+            {
+                return Task.FromResult<long>(0);
+            }
+
+            return Task.Run(() =>
+            {
+                long total = 0;
+
+                Parallel.ForEach(files, (fileName) =>
+                {
+                    FileStream fileStream = new(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 256, true);
+                    Interlocked.Add(ref total, fileStream.Length);
+                    fileStream.Close();
+                });
+
+                return total;
+            });
+
         }
     }
 }

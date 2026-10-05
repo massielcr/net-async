@@ -1,4 +1,5 @@
-﻿using SystemThreadingTasks;
+﻿using System.Runtime.CompilerServices;
+using SystemThreadingTasks;
 using SystemThreadingTasks.Enums;
 
 class Program
@@ -28,6 +29,7 @@ class Program
             Console.WriteLine("[20] - Task  - Delay TimeSpan");
             Console.WriteLine("[21] - Task  - Delay CancellationTokenSource");
             Console.WriteLine("[22] - Task  - Delay TimeSpan CancellationTokenSource");
+            Console.WriteLine("[23] - Task  - FromException ");
 
             string? key = Console.ReadLine();
 
@@ -99,12 +101,18 @@ class Program
                 case "22":
                     await TaskClass.RunDelayTimeSpanWithCancellation();
                     goto default;
+                case "23":
+                    //await TaskClass.RunFromExceptionTask(GetCurrentFolder());
+                    await TaskClass.RunFromExceptionTask("c:\\FakeDirectory");
+                    goto default;
                 default:
                     Console.WriteLine();
                     break;
             }
         }
-    }    
+    }
+
+    static string GetCurrentFolder([CallerFilePath] string path = "") => Path.GetDirectoryName(path);
 }
 
 
