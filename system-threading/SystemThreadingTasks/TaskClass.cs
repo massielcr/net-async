@@ -684,7 +684,7 @@ namespace SystemThreadingTasks
 
         internal static async Task RunFromExceptionTask(string directoryPath)
         {
-            Console.WriteLine($"1. Create a Task that will call the GetFilesLengthAsync method");
+            Console.WriteLine($"1. Create a Task that will call the GetFilesLengthAsync method and return a Task.FromException");
             Task<long> task = GetFilesLengthAsync(directoryPath);
 
             Console.WriteLine($"2. Display Results");
@@ -692,6 +692,23 @@ namespace SystemThreadingTasks
             {
                 await task;
                 Console.WriteLine($"Status: {task.Status} Result: {(task.Status == TaskStatus.RanToCompletion ? task.Result : -1)}");
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine($"Exception: {ex.Message}");
+            }
+        }
+
+        internal static async Task RunFromResultTask(string directoryPath)
+        {
+            Console.WriteLine($"1. Create a Task that will call the GetFilesLengthAsync method and return a Task.FromResult");
+            Task<long> task = GetFilesLengthAsync(directoryPath);
+
+            Console.WriteLine($"2. Display Results");
+            try
+            {
+                long result = await task;
+                Console.WriteLine($"Status: {task.Status} Result: {(task.Status == TaskStatus.RanToCompletion ? result : -1)}");
             }
             catch(Exception ex)
             {
