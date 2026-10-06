@@ -1,6 +1,5 @@
 ﻿using System.Collections.Concurrent;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 
 namespace SystemThreadingTasks
 {
@@ -746,7 +745,7 @@ namespace SystemThreadingTasks
 
         }
 
-        public static async Task RunAction()
+        public static async Task RunActionTask()
         {
             Console.WriteLine($"1. Create an Action that prints an string");
             Action<string> action = (input) =>
@@ -761,7 +760,18 @@ namespace SystemThreadingTasks
             Console.WriteLine($"3. Run a Task and pass the Action to it");
             await Task.Run(() => action("Task"));
         }
-        
+
+        public static async Task RunLambdaTask()
+        {
+            Console.WriteLine($"1. Run the function on the main thread");
+            Console.WriteLine($"Application - Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId}");
+
+
+            Console.WriteLine($"2. Run a Task and pass a lambda to it");
+            await Task.Run(() => {
+                Console.WriteLine($"Task - Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId}");
+            });
+        }
     }
 }
 

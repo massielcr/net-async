@@ -32,6 +32,7 @@ class Program
             Console.WriteLine("[23] - Task  - FromException");
             Console.WriteLine("[24] - Task  - FromResult");
             Console.WriteLine("[25] - Task  - Run Action");
+            Console.WriteLine("[26] - Task  - Run Lambda");
 
             string? key = Console.ReadLine();
 
@@ -112,7 +113,10 @@ class Program
                     await TaskClass.RunFromResultTask(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "temp"));
                     goto default;
                 case "25":
-                    await TaskClass.RunAction();
+                    await TaskClass.RunActionTask();
+                    goto default;
+                case "26":
+                    await TaskClass.RunLambdaTask();
                     goto default;
                 default:
                     Console.WriteLine();
