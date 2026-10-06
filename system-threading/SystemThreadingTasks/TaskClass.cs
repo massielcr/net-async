@@ -745,6 +745,23 @@ namespace SystemThreadingTasks
             });
 
         }
+
+        public static async Task RunAction()
+        {
+            Console.WriteLine($"1. Create an Action that prints an string");
+            Action<string> action = (input) =>
+            {
+                Console.WriteLine($"{input} - Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId}");
+            };
+
+            Console.WriteLine($"2. Run the action on the main thread");
+            action("Application");
+
+
+            Console.WriteLine($"3. Run a Task and pass the Action to it");
+            await Task.Run(() => action("Task"));
+        }
+        
     }
 }
 

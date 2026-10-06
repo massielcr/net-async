@@ -29,8 +29,9 @@ class Program
             Console.WriteLine("[20] - Task  - Delay TimeSpan");
             Console.WriteLine("[21] - Task  - Delay CancellationTokenSource");
             Console.WriteLine("[22] - Task  - Delay TimeSpan CancellationTokenSource");
-            Console.WriteLine("[23] - Task  - FromException ");
-            Console.WriteLine("[24] - Task  - FromResult ");
+            Console.WriteLine("[23] - Task  - FromException");
+            Console.WriteLine("[24] - Task  - FromResult");
+            Console.WriteLine("[25] - Task  - Run Action");
 
             string? key = Console.ReadLine();
 
@@ -109,6 +110,9 @@ class Program
                 case "24":
                     //await TaskClass.RunFromExceptionTask(GetCurrentFolder());
                     await TaskClass.RunFromResultTask(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyPictures), "temp"));
+                    goto default;
+                case "25":
+                    await TaskClass.RunAction();
                     goto default;
                 default:
                     Console.WriteLine();
