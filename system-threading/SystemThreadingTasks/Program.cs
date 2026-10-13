@@ -38,6 +38,7 @@ class Program
             Console.WriteLine("[29] - Task  - Run ThrowIfCancellationRequested");
             Console.WriteLine("[30] - Task  - Run IsCancellationRequested");
             Console.WriteLine("[31] - Task  - RunSynchronously");
+            Console.WriteLine("[32] - Task  - Start");
 
             string? key = Console.ReadLine();
 
@@ -138,6 +139,9 @@ class Program
                     goto default;
                 case "31":
                     await TaskClass.RunSynchronously(100);
+                    goto default;
+                case "32":
+                    await TaskClass.RunStart(10);
                     goto default;
                 default:
                     Console.WriteLine();

@@ -1005,6 +1005,26 @@ namespace SystemThreadingTasks
             Console.WriteLine($"- Async Task: {asyncTask.Id} Result: {asyncTask.Result}");
             Console.WriteLine($"- Sync Task: {syncTask.Id} Result: {syncTask.Result}");
         }
+
+        public static async Task RunStart(int iterationsCount)
+        {
+            Console.WriteLine($"Main Thread: {Environment.CurrentManagedThreadId}");
+
+            Console.WriteLine("1. Create a Task");
+
+            Task task = new Task(() =>
+            {                
+                for(int i = 0; i < iterationsCount; i++)
+                {
+                    Console.WriteLine($"Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId} i: {i}");
+                }
+
+            });
+
+            Console.WriteLine("2. Start and Wait the Task");
+            task.Start();
+            await task;
+        }
     }
 }
 
