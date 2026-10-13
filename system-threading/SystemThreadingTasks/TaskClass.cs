@@ -847,6 +847,124 @@ namespace SystemThreadingTasks
                 Console.WriteLine($"- Task: {tasks[i].Id} {fileNames[i]}: {await tasks[i]}");
             }
         }
+
+        public static async Task RunThrowIfCancellationRequested(int workersCount, int iterationsCount)
+        {
+            Console.WriteLine("1. Create the CancellationTokenSource");
+            CancellationTokenSource cancellationTokenSource = new();
+            CancellationToken token = cancellationTokenSource.Token;
+
+            Console.WriteLine($"2. Create {workersCount} Tasks and pass CancellationToken");
+            Task<int>[] tasks = new Task<int>[workersCount];
+
+            int completedIterations = 0;
+
+            for(int i = 0; i < workersCount; i++)
+            {
+                tasks[i] = Task.Run(() =>
+                {
+                    int iterations = 0;
+
+                    Console.WriteLine($"Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId}");
+
+                    for(int j = 1; j <= iterationsCount; j++)
+                    {
+                        token.ThrowIfCancellationRequested();
+                        iterations++;
+                    }
+
+                    int currentCompleted = Interlocked.Increment(ref completedIterations);
+
+                    if (currentCompleted >= 5)
+                    {
+                        cancellationTokenSource.Cancel();
+                    }
+
+                    return iterations;
+                }, token);
+            }
+
+            Console.WriteLine($"3. Process Tasks");
+            try
+            {
+                await Task.WhenAll(tasks);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+            finally
+            {
+                cancellationTokenSource.Dispose();
+            }
+
+            Console.WriteLine($"4. Display Results");
+            Console.WriteLine("{0,10} {1,20} {2,14:N0}", "Task Id", "Status", "Iterations");
+            foreach (Task<int> t in tasks)
+            {
+                Console.WriteLine("{0,10} {1,20} {2,14:N0}", t.Id, t.Status, (t.Status == TaskStatus.RanToCompletion) ? t.Result : 0);
+            }
+        }
+
+        public static async Task RunIsCancellationRequested(int workersCount, int iterationsCount)
+        {
+            Console.WriteLine("1. Create the CancellationTokenSource");
+            CancellationTokenSource cancellationTokenSource = new();
+            CancellationToken token = cancellationTokenSource.Token;
+
+
+            Console.WriteLine($"2. Create {workersCount} Tasks and pass CancellationToken");
+            int completedIterations = 0;
+
+            Task<int>[] tasks = new Task<int>[workersCount];
+            for(int i = 0; i < workersCount; i++)
+            {
+                tasks[i] = Task.Run(() =>
+                {
+                    int iterations = 0;
+                    Console.WriteLine($"Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId}");
+
+                    for(int j = 1; j <= iterationsCount; j++)
+                    {
+                        if (token.IsCancellationRequested)
+                        {
+                            return iterations;
+                        }
+                        iterations++;
+                    }
+
+                    int currentcompletedIterations = Interlocked.Increment(ref completedIterations);
+                    if (currentcompletedIterations >= 5)
+                    {
+                        cancellationTokenSource.Cancel();
+                    }
+
+                    return iterations;
+                }, token);
+            }
+
+
+            Console.WriteLine($"3. Process Tasks");
+            try
+            {
+                await Task.WhenAll(tasks);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+            finally
+            {
+                cancellationTokenSource.Dispose();
+            }
+
+            Console.WriteLine($"4. Display Results");
+            Console.WriteLine("{0,10} {1,20} {2,14:N0}", "Task Id", "Status", "Iterations");
+            foreach(Task<int> t in tasks)
+            {
+                Console.WriteLine("{0,10} {1,20} {2,14:N0}", t.Id, t.Status, t.Status == TaskStatus.RanToCompletion ? t.Result : 0);
+            }
+        }
     }
 }
 

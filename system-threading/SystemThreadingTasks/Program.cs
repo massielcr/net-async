@@ -35,6 +35,8 @@ class Program
             Console.WriteLine("[26] - Task  - Run Lambda");
             Console.WriteLine("[27] - Task  - Run ConcurrentBag");
             Console.WriteLine("[28] - Task  - Run Func<T> - WordCounter");
+            Console.WriteLine("[29] - Task  - Run ThrowIfCancellationRequested");
+            Console.WriteLine("[30] - Task  - Run IsCancellationRequested");
 
             string? key = Console.ReadLine();
 
@@ -126,6 +128,12 @@ class Program
                 case "28":
                     string dir = GetCurrentFolder();
                     await TaskClass.RunFuncWordCounter([$"{dir}/files/don-quijote-406", $"{dir}/files/little-prince-219"]);
+                    goto default;
+                case "29":
+                    await TaskClass.RunThrowIfCancellationRequested(10, 20);
+                    goto default;
+                case "30":
+                    await TaskClass.RunIsCancellationRequested(10, 20);
                     goto default;
                 default:
                     Console.WriteLine();
