@@ -120,7 +120,7 @@ namespace SystemCollectionsConcurrent
             }
 
             Console.WriteLine($"6. TryRemove() not existing key");
-            string value1;
+            string? value1;
             if (!cd.TryRemove(2, out value1))
             {
                 Console.WriteLine("CD.TryRemove() failed");
@@ -132,7 +132,7 @@ namespace SystemCollectionsConcurrent
             }
 
             Console.WriteLine($"7. TryRemove() existing key");
-            string value2;
+            string? value2;
             if (cd.TryRemove(1, out value2))
             {
                 Console.WriteLine("CD.TryRemove() succeeded");                

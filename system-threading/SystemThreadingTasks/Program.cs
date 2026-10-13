@@ -33,6 +33,7 @@ class Program
             Console.WriteLine("[24] - Task  - FromResult");
             Console.WriteLine("[25] - Task  - Run Action");
             Console.WriteLine("[26] - Task  - Run Lambda");
+            Console.WriteLine("[27] - Task  - Run ConcurrentBag");
 
             string? key = Console.ReadLine();
 
@@ -118,6 +119,9 @@ class Program
                 case "26":
                     await TaskClass.RunLambdaTask();
                     goto default;
+                case "27":
+                    await TaskClass.RunConcurrentBag([".", ".."]);
+                    goto default;
                 default:
                     Console.WriteLine();
                     break;
@@ -125,7 +129,7 @@ class Program
         }
     }
 
-    static string GetCurrentFolder([CallerFilePath] string path = "") => Path.GetDirectoryName(path);
+    static string GetCurrentFolder([CallerFilePath] string path = "") => Path.GetDirectoryName(path)!;
 }
 
 

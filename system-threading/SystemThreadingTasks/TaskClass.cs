@@ -16,17 +16,17 @@ namespace SystemThreadingTasks
             };
 
             Console.WriteLine($"2. Create Task by calling a Task constructor, but started with Start()");
-            Task t1 = new(action, "t1");
+            Task t1 = new(action!, "t1");
             t1.Start();
 
             Console.WriteLine($"3. Create Task by calling Task.Factory.StartNew");
-            Task t2 = Task.Factory.StartNew(action, "t2");
+            Task t2 = Task.Factory.StartNew(action!, "t2");
 
             Console.WriteLine($"4. Create Task by calling Task.Run(Action)");
             Task t3 = Task.Run(() => action("t3"));
 
             Console.WriteLine($"5. Create Task by calling a Task constructor and run it synchronously");
-            Task t4 = new(action, "t4");
+            Task t4 = new(action!, "t4");
             t4.RunSynchronously();
 
             await Task.WhenAll(t1, t2, t3);
@@ -58,7 +58,7 @@ namespace SystemThreadingTasks
             }
             catch(AggregateException ex)
             {
-                Console.WriteLine("An exception occurred.");
+                Console.WriteLine($"An exception occurred. ex: {ex.Message}");
             }
         }
 
@@ -91,7 +91,7 @@ namespace SystemThreadingTasks
             }
             catch(Exception ex)
             {
-                Console.WriteLine("One or more exceptions occurred");
+                Console.WriteLine($"One or more exceptions occurred. ex: {ex.Message}");
                 if (allTasks.Exception != null)
                 {
                     foreach (var e in allTasks.Exception.Flatten().InnerExceptions)
@@ -331,7 +331,7 @@ namespace SystemThreadingTasks
             }
             catch(UnauthorizedAccessException ex)
             {
-                Console.WriteLine($"Denied access to {myDocumentsPath} folder");
+                Console.WriteLine($"Denied access to {myDocumentsPath} folder. ex: {ex.Message}");
             }
             catch(Exception ex)
             {
@@ -771,6 +771,44 @@ namespace SystemThreadingTasks
             await Task.Run(() => {
                 Console.WriteLine($"Task - Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId}");
             });
+        }
+
+        public static async Task RunConcurrentBag(string[] directories)
+        {
+            Console.WriteLine($"1.Create the ConcurrentBag<T>");
+            ConcurrentBag<string> bag = [];
+
+            Console.WriteLine($"2.Create a Task to handle each directory from the input");
+            Task[] tasks = new Task[directories.Length];
+            for(int i = 0; i < directories.Length; i++)
+            {
+                int locali = i;
+
+                tasks[i] = Task.Run(() =>
+                {
+                    Console.WriteLine($"Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId} i:{locali}");
+
+                    foreach(string path in Directory.GetFiles(directories[locali]))
+                    {
+                        bag.Add(path);
+                    }
+                });
+            }
+
+            await Task.WhenAll(tasks);
+
+            Console.WriteLine($"3. Display Results");            
+            Console.WriteLine("Tasks:");
+            foreach(Task t in tasks)
+            {
+                Console.WriteLine($"- Task: {t.Id} Status: {t.Status}");
+            }
+
+            Console.WriteLine("Paths:");
+            while (bag.TryTake(out string? path))
+            {
+                Console.WriteLine($"- {path}");
+            }
         }
     }
 }

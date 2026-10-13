@@ -64,7 +64,7 @@ namespace SystemThreadingTasks.Enums
             }
             catch (Exception ex)
             {
-                Logger.Log($"Exception. - Current Thread ID: {threadId}");
+                Logger.Log($"Exception. - Current Thread ID: {threadId} ex: {ex.Message}");
             }            
 
             Logger.Log($"Completed. - Current Thread ID: {threadId}");
@@ -82,7 +82,7 @@ namespace SystemThreadingTasks.Enums
             }
             catch (Exception ex)
             {
-                Logger.Log($"Exception. - Current Thread ID: {threadId}");
+                Logger.Log($"Exception. - Current Thread ID: {threadId} ex: {ex.Message}");
             }
 
             Logger.Log($"Completed. - Current Thread ID: {threadId}");
@@ -100,7 +100,7 @@ namespace SystemThreadingTasks.Enums
             }
             catch (Exception ex)
             {
-                Logger.Log($"Exception. - Current Thread ID: {threadId}");
+                Logger.Log($"Exception. - Current Thread ID: {threadId} ex: {ex.Message}");
             }            
 
             Logger.Log($"Completed. - Current Thread ID: {threadId}");
@@ -118,7 +118,7 @@ namespace SystemThreadingTasks.Enums
             }
             catch (Exception ex)
             {
-                Logger.Log($"Exception. - Current Thread ID: {threadId}");
+                Logger.Log($"Exception. - Current Thread ID: {threadId} ex: {ex.Message}");
             }            
 
             Logger.Log($"Completed. - Current Thread ID: {threadId}");
