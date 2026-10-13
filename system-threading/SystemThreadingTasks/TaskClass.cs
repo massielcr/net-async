@@ -1066,6 +1066,116 @@ namespace SystemThreadingTasks
             CancellationTokenSource source = obj as CancellationTokenSource;
             if (source is not null) { source.Cancel(); }
         }
+
+        public static async Task RunWaitTimeSpan(int iterationCount, int timeout)
+        {
+            Console.WriteLine($"Main Thread: {Environment.CurrentManagedThreadId}");
+
+            Console.WriteLine($"1. Create a Task");
+            Task task = Task.Run(() =>
+            {
+                long sum = 0;
+                for(int i = 0; i < iterationCount; i++)
+                {
+                    sum += Random.Shared.Next(0, 10);
+                }
+
+                Console.WriteLine($"Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId} sum: {sum}");
+
+            });
+
+            Console.WriteLine($"2. Wait for the Task {timeout}ms and Display the Results");
+            if (!task.Wait(TimeSpan.FromMilliseconds(timeout)))
+            {
+                Console.WriteLine("The timeout interval elapsed.");
+            }
+        }
+
+        public static async Task RunWaitCancellationToken(int taskDelay)
+        {
+            Console.WriteLine($"Main Thread: {Environment.CurrentManagedThreadId}");
+
+            Console.WriteLine("1. Create a CancellationTokenSource");
+            using CancellationTokenSource cancellationTokenSource = new();
+            CancellationToken token = cancellationTokenSource.Token;
+
+            Console.WriteLine("2. Create a Task without passing a CancellationToken and Cancel the source inside it");
+            Task task = Task.Run(() =>
+            {
+                Console.WriteLine($"Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId} calling Cancel");
+                cancellationTokenSource.Cancel();
+                Thread.Sleep(taskDelay);
+                Console.WriteLine($"Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId} ended delay");
+
+            });
+
+            Console.WriteLine("3. Wait for the Task passing a CancellationToken");
+            try
+            {
+                Console.WriteLine("About to wait for the task");
+                task.Wait(token);                
+            }
+            catch(OperationCanceledException ex)
+            {
+                Console.WriteLine($"OperationCanceledException: {ex.Message}");
+            }
+
+            await task;
+        }
+
+        public static async Task RunWait(int iterationCount)
+        {
+            Console.WriteLine($"Main Thread: {Environment.CurrentManagedThreadId}");
+
+            Console.WriteLine($"1. Create a Task to process {iterationCount} items ");
+            Task task = Task.Run(() =>
+            {
+                for(int i = 0; i < iterationCount; i++)
+                {
+                    Console.WriteLine($"Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId} i: {i}");
+                }
+            });
+
+            task.Wait();
+            await task;
+
+            Console.WriteLine("2. Task ended");
+
+        }
+        public static async Task RunWaitTimeout(int iterationCount, int timeout)
+        {
+            Console.WriteLine($"Main Thread: {Environment.CurrentManagedThreadId}");
+
+            Stopwatch sw = Stopwatch.StartNew();
+
+            Console.WriteLine($"1. Create a Task to process {iterationCount} items");
+            Task task = Task.Run(() =>
+            {
+                for (int i = 0; i < iterationCount; i++)
+                {
+                    if (sw.ElapsedMilliseconds >= timeout)
+                    {
+                        Console.WriteLine($"Task: {Task.CurrentId} aborted early because timeout passed.");
+                        break;
+                    }
+
+                    Console.WriteLine($"Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId} i: {i}");
+                    Thread.Sleep(100);
+                }
+            });
+
+            Console.WriteLine($"2. Wait for the Task for {timeout}ms");
+            if (!task.Wait(timeout))
+            {
+                Console.WriteLine("The timeout interval elapsed.");
+            }                
+            else
+            {
+                Console.WriteLine("Task ended.");
+            }
+
+            await task;
+        }            
     }
 }
 
