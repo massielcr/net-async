@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 namespace SystemThreadingTasks
 {
@@ -808,6 +809,42 @@ namespace SystemThreadingTasks
             while (bag.TryTake(out string? path))
             {
                 Console.WriteLine($"- {path}");
+            }
+        }
+
+        public static async Task RunFuncWordCounter(string[] fileNames)
+        {
+            string pattern = @"\p{P}*\s+";
+
+            Console.WriteLine($"1.Create a Task to handle each directory from the input");
+            Task<int>[] tasks = new Task<int>[fileNames.Length];
+            for (int i = 0; i < fileNames.Length; i++)
+            {
+                string fileName = $"{fileNames[i]}.txt";
+
+                tasks[i] = Task.Run(async () =>
+                {
+                    int result = 0;
+
+                    Console.WriteLine($"Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId} file: {fileName}");
+
+                    if (File.Exists(fileName))
+                    {
+                        using StreamReader streamReader = new(fileName);
+                        string text = await streamReader.ReadToEndAsync();
+                        result = Regex.Matches(text, pattern).Count;
+                    }
+
+                    return result;
+                });
+            }
+
+            await Task.WhenAll(tasks);
+
+            Console.WriteLine($"2. Display Results");
+            for(int i = 0; i < tasks.Length; i++)
+            {
+                Console.WriteLine($"- Task: {tasks[i].Id} {fileNames[i]}: {await tasks[i]}");
             }
         }
     }

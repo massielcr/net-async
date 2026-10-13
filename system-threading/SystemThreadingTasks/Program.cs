@@ -34,6 +34,7 @@ class Program
             Console.WriteLine("[25] - Task  - Run Action");
             Console.WriteLine("[26] - Task  - Run Lambda");
             Console.WriteLine("[27] - Task  - Run ConcurrentBag");
+            Console.WriteLine("[28] - Task  - Run Func<T> - WordCounter");
 
             string? key = Console.ReadLine();
 
@@ -121,6 +122,10 @@ class Program
                     goto default;
                 case "27":
                     await TaskClass.RunConcurrentBag([".", ".."]);
+                    goto default;
+                case "28":
+                    string dir = GetCurrentFolder();
+                    await TaskClass.RunFuncWordCounter([$"{dir}/files/don-quijote-406", $"{dir}/files/little-prince-219"]);
                     goto default;
                 default:
                     Console.WriteLine();
