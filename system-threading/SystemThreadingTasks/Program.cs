@@ -39,6 +39,7 @@ class Program
             Console.WriteLine("[30] - Task  - Run IsCancellationRequested");
             Console.WriteLine("[31] - Task  - RunSynchronously");
             Console.WriteLine("[32] - Task  - Start");
+            Console.WriteLine("[33] - Task  - Wait - timeout & CancellationToken");
 
             string? key = Console.ReadLine();
 
@@ -142,6 +143,10 @@ class Program
                     goto default;
                 case "32":
                     await TaskClass.RunStart(10);
+                    goto default;
+                case "33":
+                    await TaskClass.RunWaitTimeoutAndCancellationToken(5000, 1500, 2500);
+                    await TaskClass.RunWaitTimeoutAndCancellationToken(500, 1500, 2500);
                     goto default;
                 default:
                     Console.WriteLine();

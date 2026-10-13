@@ -1025,6 +1025,47 @@ namespace SystemThreadingTasks
             task.Start();
             await task;
         }
+
+        public static async Task RunWaitTimeoutAndCancellationToken(int taskDelay, int cancelDelay, int waitTimeout)
+        {
+            Console.WriteLine($"Main Thread: {Environment.CurrentManagedThreadId}");
+
+            Console.WriteLine($"1. Create a Thread passing a CancellationTokenSource and a timeout of {cancelDelay}ms");
+            CancellationTokenSource cancellationTokenSource = new();
+            Thread thread = new Thread(() => CancelToken(cancellationTokenSource, cancelDelay));
+            thread.Start();
+
+            Console.WriteLine($"Start a task with a Delay of {taskDelay}");
+            Task task = Task.Run(() =>
+            {
+                Thread.Sleep(taskDelay);
+
+                Console.WriteLine($"Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId} delay ended");
+            });
+
+            try
+            {                
+                bool result = task.Wait(waitTimeout, cancellationTokenSource.Token);
+
+                Console.WriteLine($"Task: {task.Id} Result: {result}");
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine($"OperationCanceledException: {ex.Message}");
+            }
+            finally
+            {
+                cancellationTokenSource.Dispose();
+            }
+        }
+
+        private static void CancelToken(object obj, int cancelDelay)
+        {
+            Thread.Sleep(cancelDelay);
+            Console.WriteLine($"Cancelling token from Thread {Environment.CurrentManagedThreadId}");
+            CancellationTokenSource source = obj as CancellationTokenSource;
+            if (source is not null) { source.Cancel(); }
+        }
     }
 }
 
