@@ -1142,6 +1142,7 @@ namespace SystemThreadingTasks
             Console.WriteLine("2. Task ended");
 
         }
+
         public static async Task RunWaitTimeout(int iterationCount, int timeout)
         {
             Console.WriteLine($"Main Thread: {Environment.CurrentManagedThreadId}");
@@ -1176,6 +1177,59 @@ namespace SystemThreadingTasks
 
             await task;
         }            
+
+        public static async Task RunWaitAll(int workersCount)
+        {
+            Console.WriteLine($"Main Thread: {Environment.CurrentManagedThreadId}");
+
+            Console.WriteLine("1. Create a Func<T,TResult>");
+            Func<object, int> func = (object obj) =>
+            {
+                int i = (int)obj;
+
+                Thread.Sleep(i * 100);
+
+                if (2 <= i && i <= 5)
+                {
+                    throw new InvalidOperationException($"SIMULATED EXCEPTION Task: {Task.CurrentId} i: {i}");
+                }
+
+                int tikCount = Environment.TickCount;
+
+                Console.WriteLine($"Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId} i: {i}");
+
+                return tikCount;
+            };
+
+            Console.WriteLine($"2. Create {workersCount} taks");
+            Task<int>[] tasks = new Task<int>[workersCount];
+            for (int i= 0; i < workersCount; i++)
+            {
+                int index = i;
+                tasks[i] = Task<int>.Factory.StartNew(func!, index);
+            }
+
+            Console.WriteLine($"3. Wait for all tasks");
+            try
+            {
+                Task.WaitAll(tasks);
+                Console.WriteLine("Task completed");
+            }
+            catch(AggregateException ex)
+            {
+                Console.WriteLine($"AggregateException: {ex.Message}");
+                foreach(Exception ie in ex.InnerExceptions)
+                {
+                    Console.WriteLine($"- {ie.Message}");
+                }
+            }
+
+            Console.WriteLine($"3. Display Results");
+            foreach(Task<int> t in tasks)
+            {
+                Console.WriteLine($"Task: {t.Id} Status: {t.Status} Result: {(t.Status == TaskStatus.RanToCompletion ? t.Result : -1)}");
+            }
+        }
     }
 }
 

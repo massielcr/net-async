@@ -44,6 +44,7 @@ class Program
             Console.WriteLine("[35] - Task  - Wait - CancellationToken");
             Console.WriteLine("[36] - Task  - Wait");
             Console.WriteLine("[37] - Task  - Wait - Timeout");
+            Console.WriteLine("[38] - Task  - WaitAll");
 
             string? key = Console.ReadLine();
 
@@ -164,6 +165,9 @@ class Program
                 case "37":
                     await TaskClass.RunWaitTimeout(15, 2000);
                     await TaskClass.RunWaitTimeout(15, 20);
+                    goto default;
+                case "38":
+                    await TaskClass.RunWaitAll(10);
                     goto default;
                 default:
                     Console.WriteLine();
