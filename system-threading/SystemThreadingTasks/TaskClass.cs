@@ -965,6 +965,46 @@ namespace SystemThreadingTasks
                 Console.WriteLine("{0,10} {1,20} {2,14:N0}", t.Id, t.Status, t.Status == TaskStatus.RanToCompletion ? t.Result : 0);
             }
         }
+
+        public static async Task RunSynchronously(int iterationsCount)
+        {
+            Console.WriteLine($"Current Thread: {Environment.CurrentManagedThreadId}");
+
+            Console.WriteLine("1. Create Async Task");
+            Task<long> asyncTask = Task.Run(() =>
+            {
+                long result = 0;
+                Console.WriteLine($"Async Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId}");
+
+                for(int i = 0; i < iterationsCount; i++)
+                {
+                    result += i;
+                }
+
+                return result;
+            });
+
+            Console.WriteLine("2. Create Sync Task");
+            Task<long> syncTask = new Task<long>(() =>
+            {
+                long result = 0;
+                Console.WriteLine($"Sync Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId}");
+
+                for (int i = 0; i < iterationsCount; i++)
+                {
+                    result += i;
+                }
+
+                return result;
+            });
+
+            syncTask.RunSynchronously();
+            await asyncTask;
+
+            Console.WriteLine("3. Display Results");
+            Console.WriteLine($"- Async Task: {asyncTask.Id} Result: {asyncTask.Result}");
+            Console.WriteLine($"- Sync Task: {syncTask.Id} Result: {syncTask.Result}");
+        }
     }
 }
 

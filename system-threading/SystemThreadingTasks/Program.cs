@@ -37,6 +37,7 @@ class Program
             Console.WriteLine("[28] - Task  - Run Func<T> - WordCounter");
             Console.WriteLine("[29] - Task  - Run ThrowIfCancellationRequested");
             Console.WriteLine("[30] - Task  - Run IsCancellationRequested");
+            Console.WriteLine("[31] - Task  - RunSynchronously");
 
             string? key = Console.ReadLine();
 
@@ -134,6 +135,9 @@ class Program
                     goto default;
                 case "30":
                     await TaskClass.RunIsCancellationRequested(10, 20);
+                    goto default;
+                case "31":
+                    await TaskClass.RunSynchronously(100);
                     goto default;
                 default:
                     Console.WriteLine();
