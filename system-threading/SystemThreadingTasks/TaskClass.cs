@@ -1307,6 +1307,49 @@ namespace SystemThreadingTasks
             }
             Console.WriteLine($"{failed} failed");
         }
+
+        public static async Task RunWhenAllDelay(int workersCount, int iterationCount)
+        {
+            Console.WriteLine($"Main Thread: {Environment.CurrentManagedThreadId}");
+
+            Console.WriteLine($"1. Create {workersCount} Tasks");
+            Task<long>[] tasks = new Task<long>[workersCount];
+            for(int i = 0; i < workersCount; i++)
+            {
+                int delayInterval = 18 * i;
+                tasks[i] = Task.Run(() =>
+                {
+                    Console.WriteLine($"Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId} delayInterval: {delayInterval}");
+
+                    long total = 0;
+                    Thread.Sleep(delayInterval);
+
+                    for(int j = 0; j < iterationCount; j++)
+                    {
+                        total += Random.Shared.Next(1, 15);
+                    }
+
+                    return total;
+                });
+            }
+
+            Console.WriteLine("2. Wait for WhenAll");
+            try
+            {
+                Task tResult = Task.WhenAll(tasks);
+                await tResult;
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine($"Exception {ex.Message}");
+            }
+
+            Console.WriteLine("3. Display the Results");
+            foreach(Task<long> t in tasks)
+            {
+                Console.WriteLine($"Task: {t.Id} Status: {t.Status} Result: {t.Result}");
+            }
+        }
     }
 }
 
