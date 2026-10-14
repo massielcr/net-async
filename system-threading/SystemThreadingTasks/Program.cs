@@ -45,6 +45,8 @@ class Program
             Console.WriteLine("[36] - Task  - Wait");
             Console.WriteLine("[37] - Task  - Wait - Timeout");
             Console.WriteLine("[38] - Task  - WaitAll");
+            Console.WriteLine("[39] - Task  - WaitAny");
+            Console.WriteLine("[40] - Task  - WhenAll");
 
             string? key = Console.ReadLine();
 
@@ -168,6 +170,14 @@ class Program
                     goto default;
                 case "38":
                     await TaskClass.RunWaitAll(10);
+                    goto default;
+                case "39":
+                    await TaskClass.RunWaitAny(4);
+                    goto default;
+                case "40":
+                    string[] urls = [ "www.adatum.com", "www.cohovineyard.com", "www.cohowinery.com", 
+                                      "www.northwindtraders.com", "www.contoso.com", "dfssdfsd"];
+                    await TaskClass.RunWhenAll(urls);
                     goto default;
                 default:
                     Console.WriteLine();

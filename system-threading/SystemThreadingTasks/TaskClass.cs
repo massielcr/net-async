@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Net.NetworkInformation;
 using System.Text.RegularExpressions;
 
 namespace SystemThreadingTasks
@@ -1229,6 +1230,82 @@ namespace SystemThreadingTasks
             {
                 Console.WriteLine($"Task: {t.Id} Status: {t.Status} Result: {(t.Status == TaskStatus.RanToCompletion ? t.Result : -1)}");
             }
+        }
+
+        public static async Task RunWaitAny(int workersCount)
+        {
+            Console.WriteLine($"Main Thread: {Environment.CurrentManagedThreadId}");
+
+            Console.WriteLine($"1. Create {workersCount} tasks");
+            Task[] tasks = new Task[workersCount];
+            for(int i = 0; i < workersCount; i++)
+            {
+                int current = i;
+                tasks[i] = Task.Run(() =>
+                {
+                    Console.WriteLine($"Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId} i: {current}");
+                    Thread.Sleep(current * 250);
+                });
+            }
+
+            Console.WriteLine("2. Wait for any task");
+            int index = Task.WaitAny(tasks);
+
+            Console.WriteLine("3. Display the Resulst");
+            foreach(Task t in tasks)
+            {
+                Console.WriteLine($"Task: {t.Id} Status: {t.Status}");
+            }
+        }
+
+        public static async Task RunWhenAll(string[] urls)
+        {
+            Console.WriteLine($"Main Thread: {Environment.CurrentManagedThreadId}");
+
+            int failed = 0;
+
+            Console.WriteLine("1. Create a Task to handle each url");
+            Task[] tasks = new Task[urls.Length];
+            for(int i = 0; i < urls.Length; i++)
+            {
+                string url = urls[i];
+                tasks[i] = Task.Run(() =>
+                {
+                    Console.WriteLine($"Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId} url: {url}");
+
+                    Ping png = new();
+                    try
+                    {
+                        var reply = png.Send(url);
+                        if(!(reply.Status == IPStatus.Success))
+                        {
+                            Interlocked.Increment(ref failed);
+                            throw new TimeoutException($"Unable to reach {url}.");
+                        }
+                    }
+                    catch(PingException ex)
+                    {
+                        Interlocked.Increment(ref failed);
+                    }
+                });
+            }
+
+            Console.WriteLine("2. Await WhenAll tasks");
+            try
+            {
+                await Task.WhenAll(tasks);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine($"Exception: {ex.Message}");
+            }
+
+            Console.WriteLine("3. Display the Resuls");
+            foreach(Task t in tasks)
+            {
+                Console.WriteLine($"Task: {t.Id} Status: {t.Status}");
+            }
+            Console.WriteLine($"{failed} failed");
         }
     }
 }
