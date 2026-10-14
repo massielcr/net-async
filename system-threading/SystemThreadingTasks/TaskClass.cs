@@ -1350,6 +1350,181 @@ namespace SystemThreadingTasks
                 Console.WriteLine($"Task: {t.Id} Status: {t.Status} Result: {t.Result}");
             }
         }
+
+        public static async Task<int> RunFunc(int intervalCount)
+        {
+            Console.WriteLine($"Main Thread: {Environment.CurrentManagedThreadId}");
+
+            Console.WriteLine("1. Create a Task<TResult>");
+
+            Task<int> task = Task<int>.Run(() =>
+            {
+                Console.WriteLine($"Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId}");
+
+                int counter = 0;
+
+                for(int i = 0; i < intervalCount; i++)
+                {
+                    if (counter == intervalCount /2 && DateTime.Now.Hour <= 12)
+                    {
+                        break;
+                    }
+                    counter++;
+                }
+
+                return counter;
+            });
+
+            Console.WriteLine("2. Await the Task<TResult>");
+            int result = await task;
+
+            Console.WriteLine("3. Return the Result");
+            Console.WriteLine($"Task: {task.Id} Status: {task.Status} Result: {result}");
+
+            return result;
+        }
+
+        public static async Task<int> RunFactoryFunc(int intervalCount)
+        {
+            Console.WriteLine($"Main Thread: {Environment.CurrentManagedThreadId}");
+
+            Console.WriteLine("1. Start a Task<TResult> using the Factory");
+            Task<int> task = Task<int>.Factory.StartNew(() =>
+            {
+                Console.WriteLine($"Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId}");
+
+                int counter = 0;
+                for(int i =0; i < intervalCount; i++)
+                {
+                    if (counter >= intervalCount/2 && DateTime.Now.Hour <= 12)
+                    {
+                        break;
+                    }
+                    counter++;
+                }
+
+                return counter;
+            });
+
+            Console.WriteLine("2. Await the Task<TResult>");
+            int result = await task;
+
+
+            Console.WriteLine("3. Return the TResult");
+            Console.WriteLine($"Task: {task.Id} Status: {task.Status} Result: {result}");
+
+            return result;
+        }
+
+        public static async Task<int[]> RunWordCounter(string[] titles)
+        {
+            Console.WriteLine($"Main Thread: {Environment.CurrentManagedThreadId}");
+
+            string pattern = @"\p{P}*\s+";
+
+            Console.WriteLine("1. Create a Task to process each title from the input");
+            IEnumerable<Task<int>> taskQuery = titles.Select(title =>
+                Task<int>.Run(async () =>
+                {
+                    string currentFile = $"{title}.txt";
+
+                    Console.WriteLine($"Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId} File: {currentFile}");
+
+                    if (!File.Exists(currentFile))
+                    {
+                        Console.WriteLine("File not found");
+                        return 0;
+                    }
+
+                    using StreamReader streamReader = new(currentFile);
+                    string content = await streamReader.ReadToEndAsync();
+
+                    return Regex.Matches(content, pattern).Count;
+                }));            
+
+            Console.WriteLine("2. Await for all the Tasks");
+            Task<int>[] tasks = taskQuery.ToArray();
+            await Task.WhenAll(tasks);
+
+            Console.WriteLine("3. Return the results");
+            int[] result = new int[titles.Length];
+            for(int j = 0; j < titles.Length; j++)
+            {
+                result[j] = await tasks[j];
+                Console.WriteLine($"- Task: {tasks[j].Id} {titles[j]} : {result[j]}");
+            }
+
+            return result;
+        }
+
+        public static async Task RunFactoryDifferentTResult()
+        {
+            Console.WriteLine($"Main Thread: {Environment.CurrentManagedThreadId}");
+
+            Console.WriteLine("1.1 Create a Task<TResult> that returns an int");
+            Task<int> taskInt = new Task<int>(() =>
+            {
+                Console.WriteLine($"Taks: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId}");
+                return 1;
+            });
+
+            Console.WriteLine("1.2 Start and await the Task<TResult> that returns an int");
+            taskInt.Start();
+            await taskInt;
+
+            Console.WriteLine("1.3 Display Results from the Task<TResult> that returns an int");
+            Console.WriteLine($"Task: {taskInt.Id} Status: {taskInt.Status} Result: {taskInt.Result}");            
+
+
+
+            Console.WriteLine("2.1. Create a Task<TResult> that returns a Test");
+            Task<Test> taskTest = Task<Test>.Factory.StartNew(() =>
+            {
+                Console.WriteLine($"Taks: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId}");
+                return new Test { Name = ".NET", Number = 4.0 };
+            });
+
+            Console.WriteLine("2.2 Await the Task<TResult> that returns a Test");
+            await taskTest;
+
+            Console.WriteLine("2.3 Display Results from the Task<TResult> that returns a Test");
+            Console.WriteLine($"Task: {taskTest.Id} Status: {taskTest.Status} Result: {taskTest.Result.Name}-{taskTest.Result.Number}");
+
+
+
+            Console.WriteLine("3.1 Create a Task<TResult> that returns a string[]");
+            Task<string[]> taskArray = Task<string[]>.Run(() =>
+            {
+                Console.WriteLine($"Taks: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId}");
+
+                string path = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+                string[] files = Directory.GetFiles(path);
+
+                string[] pics = files.Select(f =>
+                                    {
+                                        FileInfo file = new FileInfo(f);
+                                        return (file.Name, file.Extension);
+                                    })
+                                     .Where(f => f.Extension == ".png").Select(f => f.Name).ToArray();
+
+                return pics;
+            });
+
+            Console.WriteLine("3.2 Await the Task<TResult> that returns a string[]");
+            await taskArray;
+
+            Console.WriteLine("3.3 Display Results from the Task<TResult> that returns a string[]");
+            foreach(string s in taskArray.Result)
+            {
+                Console.WriteLine($"- {s}");
+            }
+        }
+    }
+
+    internal class Test
+    {
+        public string Name { get; set; } = string.Empty;
+        public double Number { get; set; }
     }
 }
 
