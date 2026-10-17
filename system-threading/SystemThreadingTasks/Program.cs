@@ -202,7 +202,7 @@ class Program
                     await TaskClass.RunFactoryDifferentTResult();
                     goto default;
                 case "46":
-                    await TaskClass.RunFuncContinueWithCancellationToken(20, 300);
+                    await TaskClass.RunFuncContinueWithCancellationToken(20, 500);
                     goto default;
                 default:
                     Console.WriteLine();

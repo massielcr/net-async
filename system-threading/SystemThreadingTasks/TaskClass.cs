@@ -1610,15 +1610,12 @@ namespace SystemThreadingTasks
             {
                 foreach(Exception ie in ex.InnerExceptions)
                 {
-                    if (ie.GetType() == typeof(TaskCanceledException))
-                    {
-                        Console.WriteLine("The operation was cancelled.");
-                    }
-                    else
-                    {
-                        Console.WriteLine($"{ie.GetType().Name}: {ie.Message}");
-                    }
+                    Console.WriteLine($"{ie.GetType().Name}: {ie.Message}");
                 }
+            }
+            catch (OperationCanceledException ex)
+            {
+                Console.WriteLine("The operation was cancelled.");
             }
         }
     }
