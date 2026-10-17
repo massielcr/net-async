@@ -1,6 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Net.NetworkInformation;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace SystemThreadingTasks
@@ -1517,6 +1518,107 @@ namespace SystemThreadingTasks
             foreach(string s in taskArray.Result)
             {
                 Console.WriteLine($"- {s}");
+            }
+        }
+
+        public static async Task RunFuncContinueWithCancellationToken(int upperBound, int timeout)
+        {
+            Console.WriteLine($"Main Thread: {Environment.CurrentManagedThreadId}");
+
+            Console.WriteLine("1. Create a CancellationTokenSource");
+            using CancellationTokenSource cancellationTokenSource = new();
+            CancellationToken cancellationToken = cancellationTokenSource.Token;
+
+            Console.WriteLine("2. Create a Timer to trigger a Cancellation");
+            System.Timers.Timer timer = new(timeout);
+            timer.Elapsed += (source, e) =>
+            {
+                cancellationTokenSource.Cancel();
+                Console.WriteLine("Timer elapsed. Cancellation requested.");
+                timer.Dispose();
+            };
+            timer.AutoReset = false;
+            timer.Enabled = true;
+
+
+            Console.WriteLine($"3. Create a Task with {upperBound} iterations passing a CancellationToken");
+            Task<bool[]> task = Task.Run(() =>
+            {
+                Console.WriteLine($"Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId}");
+
+                bool[] values = new bool[upperBound + 1];
+
+                for(int i = 2; i <= (int)Math.Sqrt(upperBound); i++)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    if (!values[i])
+                    {
+                        for(int j = i * i; j <= upperBound; j = j + i)
+                        {
+                            values[j] = true;
+                        }
+                    }                    
+                }
+                return values;
+            }, cancellationToken);            
+
+
+            Console.WriteLine("3. Create a Continuation task passing the CancellationToken");
+            Task continuationTask = task.ContinueWith((antecedent) =>
+            {
+                Console.WriteLine($"Continuation Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId}");
+                List<int> primes = [];
+                cancellationToken.ThrowIfCancellationRequested();
+
+                bool[] numbers = antecedent.Result;
+                StringBuilder output = new();
+
+                for(int i = 1; i <= numbers.GetUpperBound(0); i++)
+                {
+                    if (!numbers[i]) { primes.Add(i);  }
+                }
+
+                for (int j = 0; j < primes.Count; j++)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    output.Append(primes[j].ToString("N0"));
+
+                    if (j < primes.Count - 1)
+                    {
+                        output.Append(", ");
+                    }
+
+                    if ((j + 1) % 8 == 0)
+                    {
+                        output.Append(Environment.NewLine);
+                    }
+
+                    Console.WriteLine($"Prime numbers from 1 to {upperBound}:");
+                    Console.WriteLine(output.ToString());
+                }
+            }, cancellationToken);
+
+
+            Console.WriteLine("4. Await the Continuation task");
+            try
+            {
+                await continuationTask;
+            }
+            catch(AggregateException ex)
+            {
+                foreach(Exception ie in ex.InnerExceptions)
+                {
+                    if (ie.GetType() == typeof(TaskCanceledException))
+                    {
+                        Console.WriteLine("The operation was cancelled.");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"{ie.GetType().Name}: {ie.Message}");
+                    }
+                }
             }
         }
     }
