@@ -1865,7 +1865,7 @@ namespace SystemThreadingTasks
            
         }
 
-        public static async Task RunTaskFactoryContinueWhenAll(string path)
+        public static async Task RunTaskFactoryContinueWhenAllDirectory(string path)
         {
             Console.WriteLine($"Main Thread: {Environment.CurrentManagedThreadId}");
 
@@ -1928,6 +1928,68 @@ namespace SystemThreadingTasks
             {
                 Console.WriteLine($"Error: {ex.Message}");
             }
+        }
+
+        public static async Task<int> RunTaskFactoryContinueWhenAllWordCounter(string path)
+        {
+            Console.WriteLine($"Main Thread: {Environment.CurrentManagedThreadId}");
+
+            string pattern = @"\b\w+\b";
+
+            int totalWords = 0;
+
+            Console.WriteLine($"1. Create a Task to get all files in {path}");
+            Task<string[]> task = Task.Factory.StartNew(() =>
+            {
+                if (!Directory.Exists(path))
+                {
+                    return Array.Empty<string>();
+                }
+
+                return Directory.GetFiles(path);
+            });
+
+            string[] files = await task;
+
+            Console.WriteLine("2. Create Continuation Tasks to count the words for each found file");
+            Task[] wordCounterTasks = new Task[files.Length];
+            for(int i = 0; i < files.Length; i++)
+            {
+                string currentFile = files[i];
+                wordCounterTasks[i] = Task.Factory.StartNew(async (fn) =>
+                {
+                    string filePath = fn!.ToString()!;
+
+                    string content = await new StreamReader(filePath).ReadToEndAsync();
+                    new StreamReader(filePath).Close();
+
+                    int wordsCount = Regex.Matches(content, pattern).Count;
+                    Interlocked.Add(ref totalWords, wordsCount);
+
+                    Console.WriteLine($"- Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId} file: {fn.ToString()} wordsCount: {wordsCount}");
+
+                }, currentFile).Unwrap();
+            }
+
+            Console.WriteLine("3. Create a Continuation Task to Display the Results");
+            Task loggerTask = Task.Factory.ContinueWhenAll(wordCounterTasks, wordCountTask =>
+            {
+                int success = 0;
+                int failed = 0;
+
+                foreach(Task t in wordCountTask)
+                {
+                    if (t.Status == TaskStatus.RanToCompletion) { success++; }
+                    if (t.Status == TaskStatus.Faulted) { failed++; }
+                }
+
+                Console.WriteLine($"{($"{success} files"),-10}  {totalWords} total words");
+            });
+
+            Console.WriteLine("4. Await Continuation Task");
+            await loggerTask;
+
+            return totalWords;
         }
     }
 
