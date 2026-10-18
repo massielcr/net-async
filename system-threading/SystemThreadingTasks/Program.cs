@@ -53,6 +53,7 @@ class Program
             Console.WriteLine("[44] - Task<TResult> - Run Func<T> WordCounter");
             Console.WriteLine("[45] - Task<TResult> - Run Func<T> Factory.StartNew - Different TResult");
             Console.WriteLine("[46] - Task<TResult> - Run ContinueWith CancellationToken");
+            Console.WriteLine("[47] - Task<TResult> - Run ContinueWith CancellationToken - Logger");
 
             string dir = GetCurrentFolder();
 
@@ -203,6 +204,9 @@ class Program
                     goto default;
                 case "46":
                     await TaskClass.RunFuncContinueWithCancellationToken(20, 500);
+                    goto default;
+                case "47":
+                    await TaskClass.RunFuncContinueWithCancellationTokenLogger(2, 20, 10);
                     goto default;
                 default:
                     Console.WriteLine();

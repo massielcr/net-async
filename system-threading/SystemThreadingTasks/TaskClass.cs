@@ -1618,6 +1618,49 @@ namespace SystemThreadingTasks
                 Console.WriteLine("The operation was cancelled.");
             }
         }
+
+        public static async Task RunFuncContinueWithCancellationTokenLogger(int lowerBound, int upperBound, int iterationCount)
+        {
+            Console.WriteLine($"Main Thread: {Environment.CurrentManagedThreadId}");
+
+            Console.WriteLine("1. Create a CancellationToken");
+            CancellationTokenSource cancellationTokenSource = new();
+            CancellationToken cancellationToken = cancellationTokenSource.Token;
+
+            Console.WriteLine($"2. Create a Task passing a Random number between {lowerBound} and {upperBound}");
+            int number = Random.Shared.Next(lowerBound, upperBound);
+            Task<long[]> task = Task.Factory.StartNew((value) =>
+            {
+                Console.WriteLine($"Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId}");
+
+                int n = (int)value!;
+
+                long[] values = new long[iterationCount];
+
+                for(int i = 1; i <= iterationCount; i++)
+                {
+                    values[i - 1] = (long)Math.Pow(n, i);
+                }
+
+                return values;
+            }, number);
+
+            Console.WriteLine("3. Create a Continuation Task to log the results from previous Task");
+            Task continuationTask = task.ContinueWith((antecedent, value) =>
+            {
+                Console.WriteLine($"Continuation Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId}");
+
+                Console.WriteLine($"Exponents of {value}");
+                for(int i = 0; i < iterationCount; i++)
+                {
+                    Console.WriteLine($"{value} ^ {i + 1} = {antecedent.Result[i]:N0}");
+                }
+
+            }, number);
+
+            Console.WriteLine("4. Await for the Continuation Task");
+            await continuationTask;
+        }
     }
 
     internal class Test
