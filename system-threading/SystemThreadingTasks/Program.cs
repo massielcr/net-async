@@ -64,6 +64,8 @@ class Program
             Console.WriteLine("[55] - TaskFactory   - ContinueWhenAll - CancellationToken");
             Console.WriteLine("[56] - TaskFactory   - ContinueWhenAny");
             Console.WriteLine("[57] - TaskFactory   - StartNew - scrambles the words");
+            Console.WriteLine("[58] - TaskFactory   - StartNew - Parallel.ForEach - Directory Info");
+            Console.WriteLine("[59] - TaskFactory   - StartNew - generates a random number");
 
             string dir = GetCurrentFolder();
             string[] words = ["reason", "editor", "rioter", "rental", "senior", "regain", "ordain", "rained"];
@@ -248,6 +250,12 @@ class Program
                     goto default;
                 case "57":
                     await TaskClass.RunTaskFactoryStartNew(words);
+                    goto default;
+                case "58":                    
+                    await TaskClass.RunTaskFactoryStartNewParallelForEach(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), 100);
+                    goto default;
+                case "59":
+                    await TaskClass.RunTaskFactoryStartNewRandomNumber(10);
                     goto default;
                 default:
                     Console.WriteLine();

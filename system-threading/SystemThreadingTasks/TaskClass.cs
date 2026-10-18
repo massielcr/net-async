@@ -2196,6 +2196,93 @@ namespace SystemThreadingTasks
                 Console.WriteLine($"Task: {t.Id} Input: {t.AsyncState} Output: {t.Result}");
             }
         }
+
+        public static async Task RunTaskFactoryStartNewParallelForEach(string path, int timeout)
+        {
+            Console.WriteLine($"Main Thread: {Environment.CurrentManagedThreadId}");
+
+            Console.WriteLine("1. Create a CancellationTokenSource and get the CancellationToken");
+            using CancellationTokenSource cancellationTokenSource = new();
+            CancellationToken cancellationToken = cancellationTokenSource.Token;
+
+            Console.WriteLine("2. Create a Task that list files within a Directory");
+            List<(string Name, string? DirectoryName, long Length, DateTime LastWriteTimeUtc)> files = new();
+            Task task = Task.Factory.StartNew(() =>
+            {
+                Console.WriteLine($"Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId}");
+                
+                if (!Directory.Exists(path)) { return; }
+
+                object obj = new();
+                Parallel.ForEach(Directory.GetFiles(path), file =>
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    FileInfo fileInfo = new FileInfo(file);
+                    lock (obj)
+                    {
+                        files.Add((fileInfo.Name, fileInfo.DirectoryName, fileInfo.Length, fileInfo.LastWriteTimeUtc));
+                    }
+                });
+            }, 
+            cancellationToken);
+
+            Console.WriteLine("3. Await for the Task");
+            try
+            {
+                await task;
+            }
+            catch(AggregateException ex)
+            {
+                foreach(Exception ie in ex.InnerExceptions)
+                {
+                    Console.WriteLine($"{ie.GetType().Name}: {ie.Message}");
+                }
+            }
+
+            Console.WriteLine("4. Display the Results");
+            foreach((string Name, string? DirectoryName, long Length, DateTime LastWriteTimeUtc) f in files)
+            {
+                Console.WriteLine($"Name: {f.Name} Length: {f.Length} LastWriteTimeUtc: {f.LastWriteTimeUtc.ToLongTimeString()}");
+            }
+        }
+
+        public static async Task RunTaskFactoryStartNewRandomNumber(int iteratorCount)
+        {
+            Console.WriteLine($"Main Thread: {Environment.CurrentManagedThreadId}");
+
+            Console.WriteLine("1. Create a Func<string, string> to ShowHex");
+            Func<string, string> ShowHex = (value) =>
+            {
+                StringBuilder hexBuilder = new();
+
+                if (!Char.IsControl(value, 0))
+                {
+                    foreach(char c in value)
+                    {
+                        hexBuilder.Append($"0x{(ushort)c:X}");
+                    }
+                }
+
+                return hexBuilder.ToString();
+            };
+
+            Console.WriteLine("2. Create a Task to Display Random numbers in Hex");
+            Task[] tasks = new Task[iteratorCount];
+            for(int i = 0; i < iteratorCount; i++)
+            {
+                tasks[i] = Task.Factory.StartNew(() =>
+                {
+                    int utf32 = Random.Shared.Next(0, 0xE01F0);
+                    string utf16 = Char.ConvertFromUtf32(utf32);
+
+                    Console.WriteLine($"Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId,2} 0x{utf32:X8} --> {utf16,2} ({ShowHex(utf16)})");
+                });
+            }
+
+            Console.WriteLine("3. Await for the tasks");
+            await Task.WhenAll(tasks);
+        }
     }
 
     internal class Test
