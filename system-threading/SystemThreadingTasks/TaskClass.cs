@@ -1765,6 +1765,51 @@ namespace SystemThreadingTasks
                 Console.WriteLine($"Task was created at {t.Start} and finished at {t.End}");
             }
         }
+
+        public static async Task RunTaskCompletionSource(int result, int delay)
+        {
+            Console.WriteLine($"Main Thread: {Environment.CurrentManagedThreadId}");
+
+            Console.WriteLine("1.1. Create a TaskCompletionSource and get its Task");
+            TaskCompletionSource<int> taskCompletionSource = new();
+            Task<int> task = taskCompletionSource.Task;
+
+            Console.WriteLine("1.2. Start a Task that will complete successfully the previous created Task");
+            await Task.Delay(delay).ContinueWith(_ => {
+                Console.WriteLine($"Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId}");
+
+                taskCompletionSource.SetResult(result);
+            });
+
+            Console.WriteLine("1.3. Display the Results");
+            Console.WriteLine($"Expected: {result} Result: {task.Result}");
+
+
+
+            Console.WriteLine("2.1. Create a TaskCompletionSource and get its Task");
+            TaskCompletionSource<int> taskCompletionSourceException = new();
+            Task<int> taskException = taskCompletionSourceException.Task;
+
+            Console.WriteLine("2.2. Start a Task that will not complete successfully the previous created Task");
+            await Task.Delay(delay).ContinueWith(_ => {
+                Console.WriteLine($"Exception Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId}");
+
+                taskCompletionSourceException.SetException(new InvalidOperationException("SIMULATED EXCEPTION"));
+            });
+
+            Console.WriteLine("2.3. Display the Results");
+            try
+            {
+                int exceptionResult = taskException.Result;               
+            }
+            catch(AggregateException ex)
+            {
+                foreach(Exception ie in ex.InnerExceptions)
+                {
+                    Console.WriteLine($"{ie.GetType().Name} : {ie.Message}");
+                }
+            }
+        }
     }
 
     internal class Test
