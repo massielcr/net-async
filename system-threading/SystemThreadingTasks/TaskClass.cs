@@ -1894,6 +1894,41 @@ namespace SystemThreadingTasks
             Console.WriteLine("3. Await the ContinueWhenAll Task");
             await continueWhenAllTask;
         }
+
+        public static async Task RunTaskFactoryAllParameters()
+        {
+            Console.WriteLine($"Main Thread: {Environment.CurrentManagedThreadId}");
+
+            Console.WriteLine("1. Create a CancellationTokenSouce and get CancellationToken");
+            using CancellationTokenSource cancellationTokenSource = new();
+            CancellationToken cancellationToken = cancellationTokenSource.Token;
+
+            Console.WriteLine("2. Create an Action to DoWork");
+            Action DoWork = () =>
+            {
+                Console.WriteLine("Do some work..");
+            };
+
+            Console.WriteLine("3. Create a TaskFactory");
+            TaskFactory taskFactory = new(cancellationToken, TaskCreationOptions.PreferFairness, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+
+            Console.WriteLine("4. Create a Task to DoWork using the created TaskFactory");
+            Task task = taskFactory.StartNew(() =>
+            {
+                Console.WriteLine($"Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId}");
+                DoWork();
+            });
+
+            Console.WriteLine("5. Await the Task");
+            try
+            {
+                await task;
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+        }
     }
 
     internal class Test
