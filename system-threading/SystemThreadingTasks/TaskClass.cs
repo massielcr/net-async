@@ -1,6 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Net.NetworkInformation;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -1723,6 +1724,45 @@ namespace SystemThreadingTasks
                 {
                     Console.WriteLine($"{ie.GetType().Name}: {ie.Message}");
                 }
+            }
+        }
+
+        public static async Task RunContinuationTasks(int workersCount, int delay)
+        {
+            Console.WriteLine($"Main Thread: {Environment.CurrentManagedThreadId}");
+
+            Console.WriteLine("1. Create an anonymous DoWork function");
+            Func<(DateTime Start, DateTime End)> DoWork = () =>
+            {
+                DateTime start = DateTime.Now;
+                Thread.Sleep(delay);
+                DateTime end = DateTime.Now;
+
+                return (start, end);
+            };
+
+            Console.WriteLine("2. Start the Task to run DoWork");
+            Task<(DateTime Start, DateTime End)> task = Task.Run(() => DoWork());
+
+            Console.WriteLine($"3. Start {workersCount} continuation Tasks");
+            Task<(DateTime Start, DateTime End)>[] continuationTasks = new Task<(DateTime Start, DateTime End)>[workersCount];
+            for(int i = 0; i < workersCount; i++)
+            {
+                task = task.ContinueWith((antecedent) =>
+                {
+                   return DoWork();
+                });
+
+                continuationTasks[i] = task;
+            }
+
+            Console.WriteLine("4. Await for the Continuation Tasks");
+            (DateTime Start, DateTime End)[] results = await Task.WhenAll(continuationTasks);
+
+            Console.WriteLine("5. Display the Results");
+            foreach((DateTime Start, DateTime End) t in results)
+            {
+                Console.WriteLine($"Task was created at {t.Start} and finished at {t.End}");
             }
         }
     }

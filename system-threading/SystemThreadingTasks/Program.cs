@@ -55,6 +55,7 @@ class Program
             Console.WriteLine("[46] - Task<TResult> - Run ContinueWith CancellationToken");
             Console.WriteLine("[47] - Task<TResult> - Run ContinueWith CancellationToken - Logger");
             Console.WriteLine("[48] - Task<TResult> - Run ContinueWith");
+            Console.WriteLine("[49] - Task<TResult> - Run ContinueWith - Multiple Workers");
 
             string dir = GetCurrentFolder();
 
@@ -211,6 +212,9 @@ class Program
                     goto default;
                 case "48":
                     await TaskClass.RunFuncContinueWith(20);
+                    goto default;
+                case "49":
+                    await TaskClass.RunContinuationTasks(5, 2000);
                     goto default;
                 default:
                     Console.WriteLine();
