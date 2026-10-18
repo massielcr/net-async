@@ -1810,6 +1810,60 @@ namespace SystemThreadingTasks
                 }
             }
         }
+
+        public static async Task RunTaskExtensionsUnwrap(int n, int delay)
+        {
+            Console.WriteLine($"Main Thread: {Environment.CurrentManagedThreadId}");
+
+            Console.WriteLine("1. Create a RemoteIncrement Func");
+            Func<int, Task<int>> RemoteIncrement = (obj) =>
+            {
+                return Task.Run(() =>
+                {
+                    Console.WriteLine($"Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId} n: {obj}");
+
+                    Thread.Sleep(delay);
+
+                    return obj * 2;
+                });                
+            };
+
+
+            Console.WriteLine("2. Create a Task");
+            Task<int> task = RemoteIncrement(n);
+
+            Console.WriteLine("3. Create 3 Continuation Tasks");
+            Task<int> continuationTask = task
+              .ContinueWith(t =>
+              {
+                  Console.WriteLine($"Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId} Result: {t.Result}");
+                  return RemoteIncrement(t.Result);
+              }).Unwrap()
+              .ContinueWith(t =>
+              {
+                  Console.WriteLine($"Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId} Result: {t.Result}");
+                  return RemoteIncrement(t.Result);
+              }).Unwrap()
+              .ContinueWith(t =>
+              {
+                  Console.WriteLine($"Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId} Result: {t.Result}");
+                  return RemoteIncrement(t.Result);
+              }).Unwrap();
+
+            Console.WriteLine("4. Await the Continuation Tasks");
+            try
+            {
+                await continuationTask;
+            }
+            catch(AggregateException ex)
+            {
+                foreach(Exception ie in ex.InnerExceptions)
+                {
+                    Console.WriteLine($"{ie.GetType().Name}: {ie.Message}");
+                }
+            }
+           
+        }
     }
 
     internal class Test
