@@ -2066,6 +2066,60 @@ namespace SystemThreadingTasks
 
             return totalCount;
         }
+
+        public static async Task RunTaskFactoryContinueWhenAny()
+        {
+            Console.WriteLine($"Main Thread: {Environment.CurrentManagedThreadId}");
+
+            Console.WriteLine("1. Create 3 Tasks");
+            Task<int>[] tasks = new Task<int>[]
+            {
+                Task<int>.Factory.StartNew(() =>
+                {
+                    int delay = 500;
+                    int result = 5;
+                    Console.WriteLine($"Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId} Delay: {delay} Result: {result}");
+                    Thread.Sleep(delay);
+                    return result;
+                }),
+                Task<int>.Factory.StartNew(() =>
+                {
+                    int delay = 10;
+                    int result = 3;
+                    Console.WriteLine($"Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId} Delay: {delay} Result: {result}");
+                    Thread.Sleep(delay);
+                    return result;
+                }),
+                Task<int>.Factory.StartNew(() =>
+                {
+                    int delay = 200;
+                    int result = 2;
+                    Console.WriteLine($"Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId} Delay: {delay} Result: {result}");
+                    Thread.Sleep(delay);
+                    return result;
+                })
+            };
+
+            Console.WriteLine("2. Create the ContinueWhenAny Continuation Task");
+            Task continueWhenAnyTask = Task.Factory.ContinueWhenAny(tasks, winner =>
+            {
+                Console.WriteLine($"ContinueWhenAny Task {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId} Result: {winner.Result}");
+            });
+            await continueWhenAnyTask;
+
+            Console.WriteLine("3. Create the ContinueWhenAll Continuation Task");
+            Task continueWhenAllTask = Task.Factory.ContinueWhenAll(tasks, (antecedents) =>
+            {
+                int sum = 0;
+                foreach (Task<int> t in antecedents)
+                {
+                    sum += t.Result;
+                }
+
+                Console.WriteLine($"ContinueWhenAll Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId} Total: {sum}");
+            });
+            await continueWhenAllTask;
+        }
     }
 
     internal class Test
