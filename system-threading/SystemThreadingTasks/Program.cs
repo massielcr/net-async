@@ -61,6 +61,7 @@ class Program
             Console.WriteLine("[52] - TaskFactory   - ContinueWhenAll - Directory");
             Console.WriteLine("[53] - TaskFactory   - CancellationToken, TaskCreationOptions, TaskContinuationOptions, TaskScheduler");
             Console.WriteLine("[54] - TaskFactory   - ContinueWhenAll - WordCounter");
+            Console.WriteLine("[55] - TaskFactory   - ContinueWhenAll - CancellationToken");
 
             string dir = GetCurrentFolder();
 
@@ -236,6 +237,9 @@ class Program
                     goto default;
                 case "54":
                     await TaskClass.RunTaskFactoryContinueWhenAllWordCounter(Path.Combine(dir,"files"));
+                    goto default;
+                case "55":
+                    await TaskClass.RunTaskFactoryContinueWhenAllCancellationToken(Path.Combine(dir, "files"), 50);
                     goto default;
                 default:
                     Console.WriteLine();

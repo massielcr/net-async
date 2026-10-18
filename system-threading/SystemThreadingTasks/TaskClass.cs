@@ -1991,6 +1991,81 @@ namespace SystemThreadingTasks
 
             return totalWords;
         }
+
+        public static async Task<int> RunTaskFactoryContinueWhenAllCancellationToken(string path, int delay)
+        {
+            Console.WriteLine($"Main Thread: {Environment.CurrentManagedThreadId}");
+
+            int totalCount = 0;
+            string pattern = @"\b\w+\b";
+
+            Console.WriteLine("1. Create a CancellationTokenSource");
+            CancellationTokenSource cancellationTokenSource = new();
+            cancellationTokenSource.CancelAfter(delay);
+            CancellationToken cancellationToken = cancellationTokenSource.Token;
+
+            Console.WriteLine("2. Create a Task and get the files");
+            Task<string[]> task = Task.Factory.StartNew(() =>
+            {
+                if (!Directory.Exists(path))
+                {
+                    return Array.Empty<string>();
+                }
+
+                return Directory.GetFiles(path);
+            });
+
+            string[] files = await task;
+
+            Console.WriteLine("3. Create a Task to count each word passing CancellationToken");
+            Task[] counterWordTasks = new Task[files.Length];
+            for (int i = 0; i < files.Length; i++)
+            {
+                string currentFile = files[i];
+                counterWordTasks[i] = Task.Factory.StartNew(async (fn) =>
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    string file = fn!.ToString()!;
+
+                    StreamReader sr = new(file);
+                    string content = await sr.ReadToEndAsync();
+
+                    int wordsCount = Regex.Matches(content, pattern).Count;
+
+                    Console.WriteLine($"Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId} file: {file} words: {wordsCount}");
+
+                    Interlocked.Add(ref totalCount, wordsCount);
+                }, 
+                currentFile, cancellationToken)
+                .Unwrap();
+            }
+
+            Console.WriteLine($"4. Create Continuation Task");
+            Task continuationTask = Task.Factory.ContinueWhenAll(counterWordTasks, wordCountTasks =>
+            {
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    Console.WriteLine("Previous Task was cancelled");
+                }
+                else
+                {
+                    Console.WriteLine($"{($"{wordCountTasks.Count()} files")} with {totalCount} total words");
+                }
+            });
+
+            Console.WriteLine($"5. Await the Continuation Task");
+            try
+            {
+                await continuationTask;
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine($"{ex.GetType().Name}: {ex.Message}");
+            }
+
+            return totalCount;
+        }
     }
 
     internal class Test
