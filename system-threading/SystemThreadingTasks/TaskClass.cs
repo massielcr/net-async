@@ -1661,6 +1661,70 @@ namespace SystemThreadingTasks
             Console.WriteLine("4. Await for the Continuation Task");
             await continuationTask;
         }
+
+        public static async Task RunFuncContinueWith(int upperBound)
+        {
+            Console.WriteLine($"Main Thread: {Environment.CurrentManagedThreadId}");
+
+            Console.WriteLine($"1. Create a Task to calcultate prime numbers up to {upperBound}");
+            Task<bool[]> task = Task.Run(() =>
+            {
+                Console.WriteLine($"Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId}");
+
+                bool[] values = new bool[upperBound + 1];
+                for(int i = 2; i <= (int)Math.Sqrt(upperBound); i++)
+                {
+                    if (!values[i])
+                    {
+                        for(int j = i*i; j <= upperBound; j = j+i)
+                        {
+                            values[j] = true;
+                        }
+                    }
+                }
+                return values;
+            });
+
+            Console.WriteLine("2. Create a Continuation Task to log the results");
+            Task continuationTask = task.ContinueWith((antecedent) =>
+            {
+                Console.WriteLine($"Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId}");
+
+                List<int> primes = [];
+                bool[] numbers = antecedent.Result;
+                StringBuilder output = new();
+
+                for(int i = 0; i <= numbers.GetUpperBound(0); i++)
+                {
+                    if (!numbers[i]) { primes.Add(i); }
+                }
+
+                for (int j = 0; j < primes.Count; j++)
+                {
+                    output.Append(primes[j].ToString("N0"));
+
+                    if (j < primes.Count - 1) { output.Append(", "); }
+
+                    if ((j + 1) % 8 == 0) { output.Append(Environment.NewLine); }
+                }
+
+                Console.WriteLine($"Prime numbers from 1 to {upperBound}");
+                Console.WriteLine(output);
+            });
+
+            Console.WriteLine("3. Await for the Continuation Task");
+            try
+            {
+                await continuationTask;
+            }
+            catch(AggregateException ex)
+            {
+                foreach(Exception ie in ex.InnerExceptions)
+                {
+                    Console.WriteLine($"{ie.GetType().Name}: {ie.Message}");
+                }
+            }
+        }
     }
 
     internal class Test
