@@ -63,8 +63,10 @@ class Program
             Console.WriteLine("[54] - TaskFactory   - ContinueWhenAll - WordCounter");
             Console.WriteLine("[55] - TaskFactory   - ContinueWhenAll - CancellationToken");
             Console.WriteLine("[56] - TaskFactory   - ContinueWhenAny");
+            Console.WriteLine("[57] - TaskFactory   - StartNew - scrambles the words");
 
             string dir = GetCurrentFolder();
+            string[] words = ["reason", "editor", "rioter", "rental", "senior", "regain", "ordain", "rained"];
 
             string? key = Console.ReadLine();
 
@@ -99,8 +101,7 @@ class Program
                     CancellationTokenSource cancellationTokenSource = new();
                     await TaskClass.RunParallelTasks("C:\\Windows\\System32\\", cancellationTokenSource);
                     goto default;
-                case "11":
-                    string[] words = ["reason", "editor", "rioter", "rental", "senior", "regain", "ordain", "rained"];
+                case "11":                    
                     await TaskClass.RunScramblesWords(words);
                     goto default;
                 case "12":
@@ -244,6 +245,9 @@ class Program
                     goto default;
                 case "56":
                     await TaskClass.RunTaskFactoryContinueWhenAny();
+                    goto default;
+                case "57":
+                    await TaskClass.RunTaskFactoryStartNew(words);
                     goto default;
                 default:
                     Console.WriteLine();

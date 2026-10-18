@@ -2120,6 +2120,82 @@ namespace SystemThreadingTasks
             });
             await continueWhenAllTask;
         }
+
+        public static async Task RunTaskFactoryStartNew(string[] words)
+        {
+            Console.WriteLine($"Main Thread: {Environment.CurrentManagedThreadId}");
+
+            Console.WriteLine("1. Create a CancellationTokenSource and get the CancellationToken");
+            CancellationTokenSource cancellationTokenSource = new();
+            CancellationToken cancellationToken = cancellationTokenSource.Token;
+
+            Console.WriteLine("2. Create a Task for each word on the input to scrambles the word");
+            Object lockObj = new();
+            Task<string>[] tasks = new Task<string>[words.Length];
+            for(int i = 0; i < words.Length; i++)
+            {
+                string currentWord = words[i];
+
+                tasks[i] = Task.Factory.StartNew((word) =>
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    Console.WriteLine($"Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId} Input: {word}");
+
+                    char[] result = word!.ToString()!.ToCharArray();
+
+                    double[] order = new double[result.Length];
+
+                    bool wasZero = false;
+
+                    lock (lockObj)
+                    {
+                        for(int i = 0; i < order.Length; i++)
+                        {
+                            order[i] = Random.Shared.NextDouble();
+                            if (order[i] == 0)
+                            {
+                                if (!wasZero)
+                                {
+                                    wasZero = true;
+                                }
+                                else
+                                {
+                                    cancellationTokenSource.Cancel();
+                                }
+                            }
+                        }
+                    }
+
+                    Array.Sort(order, result);
+                    return new String(result);
+                }, 
+                currentWord, cancellationToken);
+            }
+
+            Console.WriteLine("3. Await all Tasks");
+            try
+            {
+                await Task.WhenAll(tasks);
+            }
+            catch(AggregateException ex)
+            {
+                foreach(Exception ie in ex.InnerExceptions)
+                {
+                    Console.WriteLine($"{ie.GetType().Name}: {ie.Message}");
+                }
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine($"{ex.GetType().Name}: {ex.Message}");
+            }
+
+            Console.WriteLine("4. Display the Resuls");
+            foreach(Task<string> t in tasks)
+            {
+                Console.WriteLine($"Task: {t.Id} Input: {t.AsyncState} Output: {t.Result}");
+            }
+        }
     }
 
     internal class Test
