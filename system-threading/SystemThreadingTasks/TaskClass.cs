@@ -1864,6 +1864,36 @@ namespace SystemThreadingTasks
             }
            
         }
+
+        public static async Task RunTaskFactoryContinueWhenAll(string path)
+        {
+            Console.WriteLine($"Main Thread: {Environment.CurrentManagedThreadId}");
+
+            Console.WriteLine("1. Create 2 Tasks to get Files and Subdirectories");
+            string[] files = null;
+            string[] subdirectories = null;
+
+            Task[] tasks = [
+                Task.Factory.StartNew(() => {
+                        Console.WriteLine($"Files Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId}");
+                        files = Directory.GetFiles(path);
+                    }),
+                Task.Factory.StartNew(() => {
+                        Console.WriteLine($"Subdirectories Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId}");
+                        subdirectories = Directory.GetDirectories(path);
+                    })
+            ];
+
+            Console.WriteLine("2. Create a ContinueWhenAll Task");
+            Task continueWhenAllTask = Task.Factory.ContinueWhenAll(tasks, completedTasks =>
+            {
+                Console.WriteLine($"Continuation Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId}");
+                Console.WriteLine($"{path} contains {files!.Count()} files and {subdirectories!.Count()} subdirectories");
+            });
+
+            Console.WriteLine("3. Await the ContinueWhenAll Task");
+            await continueWhenAllTask;
+        }
     }
 
     internal class Test

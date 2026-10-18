@@ -58,6 +58,7 @@ class Program
             Console.WriteLine("[49] - Task<TResult> - Run ContinueWith - Multiple Workers");
             Console.WriteLine("[50] - TaskCompletionSource<TResult> - Run ContinueWith - Multiple Workers");
             Console.WriteLine("[51] - TaskExtensions - Unwrap");
+            Console.WriteLine("[52] - TaskFactory   - ContinueWhenAll");
 
             string dir = GetCurrentFolder();
 
@@ -223,6 +224,10 @@ class Program
                     goto default;
                 case "51":
                     await TaskClass.RunTaskExtensionsUnwrap(2, 1000);
+                    goto default;
+                case "52":
+                    string docsDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                    await TaskClass.RunTaskFactoryContinueWhenAll(docsDirectory);
                     goto default;
                 default:
                     Console.WriteLine();
