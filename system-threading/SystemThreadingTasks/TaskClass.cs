@@ -2283,6 +2283,39 @@ namespace SystemThreadingTasks
             Console.WriteLine("3. Await for the tasks");
             await Task.WhenAll(tasks);
         }
+
+        public static async Task RunTaskFactoryStartNewRandom(string[] words)
+        {
+            Console.WriteLine($"Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId}");
+
+            Console.WriteLine("1. Create a Task to scramble each word");
+            object obj = new();
+            Task[] tasks = new Task[words.Length];
+            for(int i = 0; i < words.Length; i++)
+            {
+                string currentWord = words[i];
+
+                tasks[i] = Task.Factory.StartNew((word) =>
+                {
+                    Char[] chars = word!.ToString()!.ToCharArray();
+                    double[] order = new double[chars.Length];
+                    lock (obj)
+                    {
+                        for (int j = 0; j < order.Length; j++)
+                        {
+                            order[j] = Random.Shared.NextDouble();
+                        }
+                    }
+                    Array.Sort(order, chars);
+
+                    Console.WriteLine($"{word} --> {new String(chars)}");                    
+                }, 
+                currentWord);
+            }
+
+            Console.WriteLine("2. Await the Tasks");
+            await Task.WhenAll(tasks);
+        }
     }
 
     internal class Test

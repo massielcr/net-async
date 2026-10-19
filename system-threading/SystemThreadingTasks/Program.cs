@@ -66,6 +66,7 @@ class Program
             Console.WriteLine("[57] - TaskFactory   - StartNew - scrambles the words");
             Console.WriteLine("[58] - TaskFactory   - StartNew - Parallel.ForEach - Directory Info");
             Console.WriteLine("[59] - TaskFactory   - StartNew - generates a random number");
+            Console.WriteLine("[60] - TaskFactory   - StartNew - scrambles the words 2");
 
             string dir = GetCurrentFolder();
             string[] words = ["reason", "editor", "rioter", "rental", "senior", "regain", "ordain", "rained"];
@@ -256,6 +257,9 @@ class Program
                     goto default;
                 case "59":
                     await TaskClass.RunTaskFactoryStartNewRandomNumber(10);
+                    goto default;
+                case "60":
+                    await TaskClass.RunTaskFactoryStartNewRandom(words);
                     goto default;
                 default:
                     Console.WriteLine();
