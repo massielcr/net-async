@@ -69,6 +69,8 @@ class Program
             Console.WriteLine("[60] - TaskFactory   - StartNew - scrambles the words 2");
             Console.WriteLine("[61] - TaskFactory   - StartNew - Random Sum");
             Console.WriteLine("[62] - TaskFactory   - StartNew - BigInteger Sequence");
+            Console.WriteLine("[63] - TaskScheduler - LimitedConcurrencyLevelTaskScheduler");
+
 
             string dir = GetCurrentFolder();
             string[] words = ["reason", "editor", "rioter", "rental", "senior", "regain", "ordain", "rained"];
@@ -268,6 +270,9 @@ class Program
                     goto default;
                 case "62":
                     await TaskClass.RunBigIntegerSequence(100);
+                    goto default;
+                case "63":
+                    await TaskClass.RunLimitedConcurrencyLevelTaskScheduler(2, 4, 10);
                     goto default;
                 default:
                     Console.WriteLine();

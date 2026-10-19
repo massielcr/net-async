@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.ConstrainedExecution;
 using System.Text;
 using System.Text.RegularExpressions;
+using SystemThreadingTasks.Schedulers;
 
 namespace SystemThreadingTasks
 {
@@ -2400,6 +2401,61 @@ namespace SystemThreadingTasks
             foreach (BigInteger[] n in results)
             {
                 Console.WriteLine($"- {n[0]}{n[1]}");
+            }
+        }
+
+        public static async Task RunLimitedConcurrencyLevelTaskScheduler(int concurrencyLevel, int workersCount, int iterationCount)
+        {
+            Console.WriteLine($"Main Thread: {Environment.CurrentManagedThreadId}");
+
+            Console.WriteLine("1. Create the LimitedConcurrencyLevelTaskScheduler  Scheduler");
+            LimitedConcurrencyLevelTaskScheduler scheduler = new LimitedConcurrencyLevelTaskScheduler(concurrencyLevel);
+
+            Console.WriteLine("2. Create a Factory using the created scheduler");
+            TaskFactory taskFactory = new TaskFactory(scheduler);
+
+            Console.WriteLine("3. Create a CancellationTokenSource and gets its CancellationToken");
+            CancellationTokenSource cancellationTokenSource = new();
+            CancellationToken cancellationToken = cancellationTokenSource.Token;
+
+            Console.WriteLine($"4. Create {workersCount} Tasks");
+            Object lockObj = new();
+            int outputItem = 0;
+            Task[] tasks = new Task[workersCount];
+            for(int i = 0; i < workersCount; i++)
+            {
+                int iteration = i;
+                tasks[i] = taskFactory.StartNew(() =>
+                {
+                    for (int j = 0; j < iterationCount; j++)
+                    {
+                        lock (lockObj)
+                        {
+                            Console.Write($"-Task {Task.CurrentId} in t-{iteration} on thread {Thread.CurrentThread.ManagedThreadId}");
+                            outputItem++;
+                            if (outputItem % 3 == 0)
+                                Console.WriteLine();
+                        }
+                    }
+                }, 
+                cancellationToken);
+            }
+
+            Console.WriteLine("5. Await for the tasks");
+            try
+            {
+                await Task.WhenAll(tasks);
+            }
+            catch(AggregateException ex)
+            {
+                foreach(Exception ie in ex.InnerExceptions)
+                {
+                    Console.WriteLine($"{ie.GetType().Name}: {ie.Message}");
+                }
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine($"{ex.GetType().Name}: {ex.Message}");
             }
         }
     }
