@@ -1,7 +1,9 @@
 ﻿using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Net.NetworkInformation;
+using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Runtime.ConstrainedExecution;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -2315,6 +2317,90 @@ namespace SystemThreadingTasks
 
             Console.WriteLine("2. Await the Tasks");
             await Task.WhenAll(tasks);
+        }
+
+        public static async Task RunTaskFactoryStartNewRandomSum(int lowerBound, int upperBound)
+        {
+            Console.WriteLine($"Main Thread: {Environment.CurrentManagedThreadId}");
+
+            Console.WriteLine("1. Create 2 Task to generate the 2 random digits");
+            Task<int>[] tasks = new Task<int>[2];
+            for(int i = 0; i < tasks.Length; i++)
+            {
+                tasks[i] = Task.Factory.StartNew(() =>
+                {
+                    return Random.Shared.Next(lowerBound, upperBound);
+                });
+            }
+
+            Console.WriteLine("2. Await for the Tasks");
+            int[] result = await Task.WhenAll(tasks);
+
+            Console.WriteLine("3. Display the Resulst");
+            Console.WriteLine($"{result[0]} + {result[1]} = {result[0] + result[1]}");
+        }
+
+        public static async Task RunBigIntegerSequence(int upperBound)
+        {
+            Console.WriteLine($"Main Thread: {Environment.CurrentManagedThreadId}");
+
+            Console.WriteLine("1. Create a CancellationTokenSource and get its CancellationToken");
+            CancellationTokenSource cancellationTokenSource = new();
+            CancellationToken cancellationToken = cancellationTokenSource.Token;
+
+            Console.WriteLine("2. Create 2 Tasks to calculate a BigInteger");
+            Task<BigInteger[]>[] tasks = new Task<BigInteger[]>[2];
+            for (int i = 0; i < tasks.Length; i++)
+            {
+                int start = i;
+                tasks[i] = Task.Run(() =>
+                {
+                    BigInteger[] sequence = new BigInteger[upperBound];
+                    sequence[0] = start;
+                    sequence[1] = 1;
+
+                    for (int j = 2; j < sequence.Length; j++)
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+
+                        sequence[j] = sequence[j - 1] + sequence[j - 2];
+                    }
+
+                    Console.WriteLine($"Task: {Task.CurrentId} Thread: {Environment.CurrentManagedThreadId}");
+
+                    return sequence;
+                },
+                cancellationToken);
+            }
+
+            Console.WriteLine("3. Await the Tasks");
+            BigInteger[][] results = null;
+            try
+            {
+                results = await Task.WhenAll(tasks);
+            }
+            catch(OperationCanceledException ex)
+            {
+                Console.WriteLine("Operation was cancelled");
+            }
+            catch(AggregateException ex)
+            {
+                foreach(Exception ie in ex.InnerExceptions)
+                {
+                    Console.WriteLine($"{ie.GetType().Name}: {ie.Message}");
+                }
+            }
+
+            Console.WriteLine("4. Display the Results");
+            if (results is null)
+            {
+                Console.WriteLine("There are no results");
+                return;
+            }
+            foreach (BigInteger[] n in results)
+            {
+                Console.WriteLine($"- {n[0]}{n[1]}");
+            }
         }
     }
 
