@@ -1,4 +1,5 @@
 <Solution>
+  <Project Path="SystemParallelClass/SystemParallelClass.csproj" Id="27896c74-86e2-415d-b898-16b291fa8585" />
   <Project Path="SystemCollectionsConcurrent/SystemCollectionsConcurrent.csproj" Id="47294f70-e5a3-4f93-8082-9caf1ab2c25c" />
   <Project Path="SystemIOPipelines/SystemIOPipelines.csproj" Id="45dd47eb-889b-4b08-a9fe-576b35cfa69b" />
   <Project Path="SystemThreadingChannels/SystemThreadingChannels.csproj" Id="2727a419-8eab-427a-8b87-814658e9d8d7" />
